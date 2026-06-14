@@ -69,7 +69,7 @@ export function TruckQueueChart({
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<ChartContainer className="aspect-auto h-[300px] w-full" config={chartConfig}>
+				<ChartContainer className="h-[300px] w-full" config={chartConfig}>
 					<AreaChart
 						accessibilityLayer
 						data={chartRows}

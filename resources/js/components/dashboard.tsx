@@ -10,10 +10,10 @@ export function Dashboard() {
 	return (
 		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 			<DashboardStats />
-			<ProductionVolumeChart className="col-span-1 sm:col-span-2 lg:col-span-4" />
+			<ProductionVolumeChart />
 			<QualityBreakdownChart />
-			<DeliveryStatusChart className="col-span-1 sm:col-span-2 lg:col-span-2" />
-			<TruckQueueChart className="col-span-1 sm:col-span-2 lg:col-span-2" />
+			<DeliveryStatusChart className="md:col-span-2 lg:col-span-2" />
+			<TruckQueueChart className="md:col-span-2 lg:col-span-2" />
 			<RecentDeliveries />
 			<FactoryActivity />
 		</div>

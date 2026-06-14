@@ -79,7 +79,7 @@ export function DeliveryStatusChart({
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<ChartContainer className="aspect-auto h-[300px] w-full" config={chartConfig}>
+				<ChartContainer className="h-[300px] w-full" config={chartConfig}>
 					<BarChart accessibilityLayer data={[...chartData]}>
 						<XAxis
 							axisLine={false}
