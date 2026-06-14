@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { LayoutGridIcon, ListChecksIcon, BarChart3Icon, TruckIcon, UsersIcon, SproutIcon, SettingsIcon, HelpCircleIcon, ActivityIcon, FileTextIcon, HistoryIcon } from "lucide-react";
+import { LayoutGridIcon, TruckIcon, UsersIcon, SproutIcon, HelpCircleIcon, ActivityIcon, FileTextIcon, HistoryIcon, BarChart3Icon, ListChecksIcon } from "lucide-react";
 
 export type SidebarNavItem = {
 	title: string;
@@ -26,55 +26,34 @@ const pemilikNavGroups: SidebarNavGroup[] = [
 			},
 		],
 	},
-	{
-		label: "Operasional",
-		items: [
-			{
-				title: "Antrean Truk",
-				path: "#/queue",
-				icon: <ListChecksIcon />,
-			},
-			{
-				title: "Laporan Panen",
-				path: "#/team-insights",
-				icon: <BarChart3Icon />,
-			},
-		],
-	},
+
 	{
 		label: "Logistik",
 		items: [
 			{
 				title: "Pengiriman TBS",
+				path: "/pengiriman",
 				icon: <TruckIcon />,
-				subItems: [
-					{ title: "Menunggu Nota", path: "#/inbox/unassigned" },
-					{ title: "Dalam Perjalanan", path: "#/inbox/assigned" },
-					{ title: "Selesai", path: "#/inbox/closed" },
-				],
 			},
 			{
-				title: "Data Supir",
-				path: "#/customers",
+				title: "Data Mobil",
+				path: "/mobil",
 				icon: <UsersIcon />,
 			},
 			{
 				title: "Blok Kebun",
-				path: "#/channels",
+				path: "/lahan",
 				icon: <SproutIcon />,
 			},
 		],
 	},
 	{
-		label: "Sistem",
+		label: "Analitik",
 		items: [
 			{
-				title: "Pengaturan",
-				icon: <SettingsIcon />,
-				subItems: [
-					{ title: "Akses Karyawan", path: "#/workspace/branding" },
-					{ title: "Data Pabrik", path: "#/workspace/team" },
-				],
+				title: "Laporan Panen",
+				path: "/laporan",
+				icon: <BarChart3Icon />,
 			},
 		],
 	},
@@ -97,12 +76,12 @@ const pekerjaNavGroups: SidebarNavGroup[] = [
 		items: [
 			{
 				title: "Lapor Keberangkatan",
-				path: "#/pekerja/lapor",
+				path: "/pengiriman/create",
 				icon: <TruckIcon />,
 			},
 			{
 				title: "Riwayat Perjalanan",
-				path: "#/pekerja/riwayat",
+				path: "/pengiriman",
 				icon: <HistoryIcon />,
 			},
 		],
@@ -126,12 +105,12 @@ const petugasRamNavGroups: SidebarNavGroup[] = [
 		items: [
 			{
 				title: "Antrean Truk",
-				path: "#/petugas-ram/antrean",
+				path: "/pengiriman",
 				icon: <ListChecksIcon />,
 			},
 			{
 				title: "Upload Foto Nota",
-				path: "#/petugas-ram/upload",
+				path: "/nota",
 				icon: <FileTextIcon />,
 			},
 		],

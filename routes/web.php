@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LahanController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\NotaController;
 use App\Http\Controllers\PengirimanController;
@@ -9,35 +11,36 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('auth/login');
-})->middleware('guest')->name('home');
+})->middleware('guest');
 
-Route::middleware(['auth'])->group(function () {
-    // We will keep a generic fallback dashboard route just in case
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
-});
+// Route Dashboard utama (Redirector)
+Route::middleware(['auth'])->get('/dashboard', function () {
+    $role = auth()->user()->role ?? 'pekerja';
+    if ($role === 'pemilik') return redirect()->route('dashboard.pemilik');
+    if ($role === 'petugas_ram') return redirect()->route('dashboard.ram');
+    return redirect()->route('dashboard.pekerja');
+})->name('dashboard');
 
 // Route Pemilik
 Route::middleware(['auth', 'role:pemilik'])
-    ->get('/dashboard-pemilik', function () {
-        return Inertia::render('Pemilik/Dashboard');
-    })->name("dashboard.pemilik");
-
+    ->get('/dashboard-pemilik', [DashboardController::class, 'pemilik'])
+    ->name("dashboard.pemilik");
 
 // Route Pekerja
 Route::middleware(['auth', 'role:pekerja'])
-    ->get('/dashboard-pekerja', function () {
-        return Inertia::render('Pekerja/Dashboard');
-    })->name("dashboard.pekerja");
-
+    ->get('/dashboard-pekerja', [DashboardController::class, 'pekerja'])
+    ->name("dashboard.pekerja");
 
 // Route Petugas RAM
 Route::middleware(['auth', 'role:petugas_ram'])
-    ->get('/dashboard-ram', function () {
-        return Inertia::render('PetugasRam/Dashboard');
-    })->name("dashboard.ram");
+    ->get('/dashboard-ram', [DashboardController::class, 'ram'])
+    ->name("dashboard.ram");
 
+
+// Route Laporan (khusus pemilik)
+Route::middleware(['auth', 'role:pemilik'])
+    ->get('/laporan', [LaporanController::class, 'index'])
+    ->name('laporan.index');
 
 // Route Mobil
 Route::middleware(['auth'])
@@ -55,10 +58,15 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Route Pengiriman
-Route::resource(
-    'pengiriman',
-    PengirimanController::class
-);
+Route::resource('pengiriman', PengirimanController::class);
+
+// Route input berat netto (khusus pekerja)
+Route::middleware(['auth', 'role:pekerja'])->group(function () {
+    Route::get('/pengiriman/{pengiriman}/timbang', [PengirimanController::class, 'timbang'])
+        ->name('pengiriman.timbang');
+    Route::patch('/pengiriman/{pengiriman}/timbang', [PengirimanController::class, 'simpanBerat'])
+        ->name('pengiriman.simpan-berat');
+});
 
 
 // Route Nota

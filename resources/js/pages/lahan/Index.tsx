@@ -1,0 +1,91 @@
+import { Head, Link, router } from '@inertiajs/react';
+import AppHeaderLayout from '@/layouts/app/app-header-layout';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { PlusIcon, EditIcon, TrashIcon } from 'lucide-react';
+
+interface Lahan {
+    id: number;
+    nama_blok: string;
+    luas_ha: number;
+}
+
+export default function LahanIndex({ lahans }: { lahans: Lahan[] }) {
+    const handleDelete = (id: number) => {
+        if (confirm('Apakah Anda yakin ingin menghapus lahan ini?')) {
+            router.delete(`/lahan/${id}`);
+        }
+    };
+
+    return (
+        <AppHeaderLayout>
+            <Head title="Manajemen Lahan" />
+            <div className="flex h-full w-full flex-col gap-4 p-4 lg:p-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight">Blok Kebun</h1>
+                        <p className="text-sm text-muted-foreground">Kelola data lahan dan blok kebun sawit Anda.</p>
+                    </div>
+                    <Button asChild className="bg-[#65A30D] hover:bg-[#84CC16]">
+                        <Link href="/lahan/create">
+                            <PlusIcon className="mr-2 h-4 w-4" />
+                            Tambah Lahan
+                        </Link>
+                    </Button>
+                </div>
+
+                <Card className="rounded-[20px] shadow-sm">
+                    <CardHeader>
+                        <CardTitle>Daftar Lahan</CardTitle>
+                        <CardDescription>Semua lahan yang terdaftar di sistem.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Nama Blok</TableHead>
+                                    <TableHead>Luas (Hektar)</TableHead>
+                                    <TableHead className="w-[100px]">Aksi</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {lahans.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={3} className="h-24 text-center">
+                                            Belum ada data lahan.
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    lahans.map((lahan) => (
+                                        <TableRow key={lahan.id}>
+                                            <TableCell className="font-medium">{lahan.nama_blok}</TableCell>
+                                            <TableCell>{lahan.luas_ha} ha</TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-700">
+                                                        <Link href={`/lahan/${lahan.id}/edit`}>
+                                                            <EditIcon className="h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="icon" 
+                                                        className="h-8 w-8 text-red-600 hover:text-red-700"
+                                                        onClick={() => handleDelete(lahan.id)}
+                                                    >
+                                                        <TrashIcon className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </div>
+        </AppHeaderLayout>
+    );
+}

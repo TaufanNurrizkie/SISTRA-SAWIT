@@ -11,26 +11,36 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name' => 'Pemilik Kebun',
-            'email' => 'pemilik@sawit.com',
-            'phone' => '081111111111',
-            'role' => 'pemilik',
+            'name'     => 'Pemilik Kebun',
+            'email'    => 'pemilik@sawit.com',
+            'phone'    => '081111111111',
+            'role'     => 'pemilik',
+            'password' => Hash::make('password'),
+        ]);
+
+        // 2 supir/pekerja
+        User::create([
+            'name'     => 'Budi Santoso',
+            'email'    => 'budi@sawit.com',
+            'phone'    => '082222222222',
+            'role'     => 'pekerja',
             'password' => Hash::make('password'),
         ]);
 
         User::create([
-            'name' => 'Pekerja Kebun',
-            'email' => 'pekerja@sawit.com',
-            'phone' => '082222222222',
-            'role' => 'pekerja',
+            'name'     => 'Ahmad Riyadi',
+            'email'    => 'ahmad@sawit.com',
+            'phone'    => '082333333333',
+            'role'     => 'pekerja',
             'password' => Hash::make('password'),
         ]);
 
+        // Petugas RAM
         User::create([
-            'name' => 'Petugas RAM',
-            'email' => 'ram@sawit.com',
-            'phone' => '083333333333',
-            'role' => 'petugas_ram',
+            'name'     => 'Petugas RAM',
+            'email'    => 'ram@sawit.com',
+            'phone'    => '083333333333',
+            'role'     => 'petugas_ram',
             'password' => Hash::make('password'),
         ]);
     }

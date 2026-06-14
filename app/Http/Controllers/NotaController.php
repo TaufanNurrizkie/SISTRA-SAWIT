@@ -20,6 +20,7 @@ class NotaController extends Controller
                 'pekerja'
             ])
                 ->where('status', 'menunggu_nota')
+                ->latest()
                 ->get()
         ]);
     }
@@ -27,30 +28,24 @@ class NotaController extends Controller
     public function create(Pengiriman $pengiriman)
     {
         return Inertia::render('nota/Upload', [
-            'pengiriman' => $pengiriman
+            'pengiriman' => $pengiriman->load(['mobil', 'lahan', 'pekerja']),
         ]);
     }
 
-    public function store(
-        StoreNotaRequest $request,
-        Pengiriman $pengiriman
-    ) {
-
-        $fotoPath = $request
-            ->file('foto_nota')
-            ->store('nota', 'public');
+    public function store(StoreNotaRequest $request, Pengiriman $pengiriman)
+    {
+        $fotoPath = $request->file('foto_nota')->store('nota', 'public');
 
         Nota::create([
             'pengiriman_id' => $pengiriman->id,
-            'petugas_id' => auth()->id(),
-            'foto_nota' => $fotoPath,
-            'waktu_upload' => now(),
+            'petugas_id'    => auth()->id(),
+            'foto_nota'     => $fotoPath,
+            'berat_ram_kg'  => $request->berat_ram_kg,
+            'waktu_upload'  => now(),
         ]);
 
-        $pengiriman->update([
-            'berat_netto_kg' => $request->berat_netto_kg,
-            'status' => 'selesai',
-        ]);
+        // Hanya ubah status ke selesai, TIDAK overwrite berat pekerja
+        $pengiriman->update(['status' => 'selesai']);
 
         return redirect()
             ->route('nota.index')

@@ -12,8 +12,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MobilSeeder::class,
             LahanSeeder::class,
-            PengirimanSeeder::class,
-            NotaSeeder::class,
         ]);
     }
 }

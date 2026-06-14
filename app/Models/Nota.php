@@ -10,6 +10,7 @@ class Nota extends Model
         'pengiriman_id',
         'petugas_id',
         'foto_nota',
+        'berat_ram_kg',
         'waktu_upload',
     ];
 
