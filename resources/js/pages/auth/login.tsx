@@ -323,7 +323,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             {/* Left Content Section */}
             <div className="relative hidden flex-col justify-between overflow-hidden border-r border-border bg-background p-12 text-foreground lg:flex">
                 <div className="relative z-20">
-                    <Link href={route('home')} className="flex items-center gap-3 text-xl font-bold tracking-tight">
+                    <Link href="/" className="flex items-center gap-3 text-xl font-bold tracking-tight">
                         <div className="flex size-10 items-center justify-center rounded-xl border border-border bg-green-100 dark:bg-green-500/20 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
                             <AppLogoIcon className="size-6 fill-current text-green-700 dark:text-green-400" />
                         </div>
@@ -602,7 +602,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 <div className="relative z-10 w-full max-w-[400px]">
                     {/* Mobile Logo */}
                     <div className="mb-8 flex items-center justify-center gap-2 text-lg font-semibold lg:hidden">
-                        <Link href={route('home')} className="flex items-center gap-2 font-semibold">
+                        <Link href="/" className="flex items-center gap-2 font-semibold">
                             <div className="flex size-8 items-center justify-center rounded-lg border border-border bg-green-100 dark:bg-green-500/20">
                                 <AppLogoIcon className="size-5 fill-current text-green-700 dark:text-green-400" />
                             </div>
@@ -718,8 +718,16 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         </Button>
                     </form>
 
+                    {/* Register Link */}
+                    <div className="mt-6 text-center text-sm text-muted-foreground">
+                        Belum punya akun?{' '}
+                        <TextLink href={route('register')} className="font-medium text-[#65A30D] dark:text-green-400 transition-colors hover:text-[#84CC16]">
+                            Daftar di sini
+                        </TextLink>
+                    </div>
+
                     {/* Footer Notice / IT Support info */}
-                    <div className="mt-8 border-t border-border pt-6 text-center text-xs text-muted-foreground">
+                    <div className="mt-4 border-t border-border pt-6 text-center text-xs text-muted-foreground">
                         Hanya untuk personel berwenang. Masalah dengan akun Anda?{' '}
                         <a href="mailto:support@sistrasawit.com" className="font-medium text-[#65A30D] dark:text-green-400 hover:underline">
                             Hubungi IT Support

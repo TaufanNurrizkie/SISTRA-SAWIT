@@ -26,6 +26,15 @@ class PengirimanController extends Controller
         ]);
     }
 
+    public function show(Pengiriman $pengiriman)
+    {
+        $pengiriman->load(['mobil', 'lahan', 'pekerja', 'nota.petugas']);
+
+        return Inertia::render('pengiriman/Show', [
+            'pengiriman' => $pengiriman,
+        ]);
+    }
+
     public function create()
     {
         return Inertia::render('pengiriman/Create', [
@@ -76,5 +85,35 @@ class PengirimanController extends Controller
         return redirect()
             ->route('pengiriman.index')
             ->with('success', 'Pengiriman berhasil dihapus');
+    }
+
+    // Halaman input berat netto (khusus pekerja)
+    public function timbang(Pengiriman $pengiriman)
+    {
+        // Hanya bisa input berat kalau status masih perjalanan
+        if ($pengiriman->status !== 'perjalanan') {
+            return redirect()->route('pengiriman.index')
+                ->with('error', 'Berat sudah diinput atau pengiriman sudah selesai.');
+        }
+
+        return Inertia::render('pengiriman/Timbang', [
+            'pengiriman' => $pengiriman->load(['mobil', 'lahan']),
+        ]);
+    }
+
+    // Simpan berat netto dan ubah status ke menunggu_nota
+    public function simpanBerat(Pengiriman $pengiriman)
+    {
+        request()->validate([
+            'berat_netto_kg' => 'required|numeric|min:1|max:99999',
+        ]);
+
+        $pengiriman->update([
+            'berat_netto_kg' => request('berat_netto_kg'),
+            'status' => 'menunggu_nota',
+        ]);
+
+        return redirect()->route('pengiriman.index')
+            ->with('success', 'Berat berhasil diinput. Status berubah ke Menunggu Nota.');
     }
 }

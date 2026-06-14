@@ -1,537 +1,402 @@
-# Product Requirements Document (PRD)
-## SISTRA-SAWIT — Sistem Informasi Transparansi Hasil Panen Kelapa Sawit
+# SISTRA-SAWIT — Product Requirements Document v1.0
 
-**Versi:** 1.0  
-**Tanggal:** 2024  
-**Tujuan Dokumen:** Referensi lengkap untuk AI agent / developer dalam membangun sistem SISTRA-SAWIT dari nol.
+**Sistem Informasi Transparansi Hasil Panen Kelapa Sawit**
 
 ---
 
-## 1. KONTEKS & LATAR BELAKANG
-
-### 1.1 Masalah yang Diselesaikan
-
-SISTRA-SAWIT dibangun untuk mengatasi tiga masalah utama dalam rantai panen kelapa sawit:
-
-| No | Masalah | Dampak |
-|----|---------|--------|
-| 1 | **Selisih Data** — Laporan berat dari pekerja kebun sering tidak sesuai dengan hasil timbangan aktual di RAM (pabrik pengolahan) | Pemilik kebun dirugikan secara finansial |
-| 2 | **Manipulasi Nota** — Petugas RAM rentan diintervensi pihak lain untuk mengubah data nota fisik | Data tidak dapat dipercaya, potensi fraud |
-| 3 | **Tidak Ada Bukti Dokumentasi** — Tidak ada sistem pencatatan digital yang andal | Pemilik tidak bisa memverifikasi kebenaran laporan |
-
-### 1.2 Solusi
-
-Platform web yang mengintegrasikan tiga alur utama dalam satu sistem:
-1. Laporan keberangkatan dari pekerja kebun
-2. Upload foto bukti nota dari petugas RAM
-3. Dashboard monitoring real-time untuk pemilik kebun
+| Field | Detail |
+|---|---|
+| **Nama Produk** | SISTRA-SAWIT |
+| **Versi Dokumen** | v1.0 |
+| **Status** | Draft — Untuk Review Tim Pengembang |
+| **Platform** | Web Application (React.js + Tailwind CSS) |
+| **Database** | MySQL |
+| **Target Pengguna** | Pemilik Kebun, Pekerja Kebun, Petugas RAM |
+| **Tanggal** | 2024 |
 
 ---
 
-## 2. GAMBARAN UMUM SISTEM
+## 1. Ringkasan Eksekutif
 
-### 2.1 Tiga Pilar Utama
+SISTRA-SAWIT adalah platform berbasis web yang dirancang untuk menyelesaikan masalah ketidaksesuaian data antara laporan pekerja lapangan dengan hasil penimbangan aktual di RAM (pabrik pengolahan kelapa sawit). Sistem ini menjamin transparansi dan akuntabilitas di seluruh rantai pengiriman hasil panen sawit.
 
-**Pilar 1 — Validasi & Komparasi Data**
-- Sistem membandingkan berat (kg) yang diinput pekerja dengan estimasi kapasitas kendaraan dan data blok lahan
-- Deteksi selisih dilakukan secara otomatis oleh sistem
+### 1.1 Latar Belakang
 
-**Pilar 2 — Dokumentasi Bukti Otentik**
-- Petugas RAM mengunggah foto nota timbangan asli langsung dari kamera/galeri perangkat
-- Foto dijadikan bukti fisik sah yang tidak dapat dimanipulasi setelah diupload
+Industri perkebunan kelapa sawit skala kecil-menengah menghadapi tantangan serius dalam pengelolaan data produksi:
 
-**Pilar 3 — Dashboard Real-Time**
-- Pemilik kebun dapat memantau histori panen, status pengiriman, dan produktivitas per blok lahan
-- Data ditampilkan secara real-time dari dashboard
+- **Selisih Data** — Laporan pekerja tidak cocok dengan timbangan RAM, merugikan pemilik kebun.
+- **Manipulasi Nota** — Petugas RAM diintervensi pihak lain untuk mengubah data nota fisik.
+- **Tidak Ada Bukti** — Tidak ada sistem dokumentasi yang andal untuk verifikasi data panen.
 
----
+### 1.2 Tujuan Produk
 
-## 3. AKTOR & PERSONA PENGGUNA
+- Menyediakan sistem pencatatan hasil panen yang transparan dan akuntabel.
+- Mengeliminasi praktik manipulasi data dengan bukti foto nota otentik.
+- Memberikan pemilik kebun akses real-time terhadap data produksi.
+- Meminimalisir selisih data antara laporan lapangan dan hasil timbangan RAM.
 
-Sistem memiliki **3 tipe pengguna (role)**:
+### 1.3 Pernyataan Visi
 
-### 3.1 Pemilik Kebun (Role: `pemilik`)
-
-- **Persona:** Ibu Irdawati, pemilik kebun sawit
-- **Masalah:** Sering ada selisih antara laporan pekerja dan hasil timbangan RAM, tidak bisa memverifikasi secara mandiri
-- **Kebutuhan:** Data panen yang transparan dan akurat secara real-time dari sumbernya
-- **Fitur yang diakses:**
-  - Dashboard Monitoring (rekapitulasi harian)
-  - Filter Riwayat Panen (tanggal / blok / plat)
-  - Kelola Data Mobil (CRUD)
-  - Kelola Blok Lahan (CRUD)
-  - Komparasi Data Visual (berat vs foto nota)
-
-### 3.2 Pekerja Kebun (Role: `pekerja`)
-
-- **Persona:** Pak Untung, pekerja lapangan
-- **Masalah:** Sering dituduh curang jika ada selisih, padahal bisa karena kesalahan tulis manual
-- **Kebutuhan:** Proses pelaporan simpel dan bisa membuktikan kejujuran lewat bukti digital
-- **Fitur yang diakses:**
-  - Input Laporan Keberangkatan (pilih mobil & blok lahan)
-  - Input Berat Netto (kg) setelah timbang di RAM
-  - Lihat Status Pengiriman
-
-### 3.3 Petugas RAM (Role: `petugas_ram`)
-
-- **Persona:** Dafi Afriza, petugas pabrik/timbangan RAM
-- **Masalah:** Sering diintervensi pekerja untuk memanipulasi data nota fisik
-- **Kebutuhan:** Bisa mengupload bukti langsung agar data tidak bisa diubah pihak lain
-- **Fitur yang diakses:**
-  - Cari Data Pengiriman by Nomor Plat Mobil
-  - Upload Foto Nota Timbangan
-  - Konfirmasi Selesai (menutup laporan pengiriman)
+> *"Menjadikan setiap kilogram hasil panen kelapa sawit dapat dipertanggungjawabkan secara digital, transparan, dan tidak dapat dimanipulasi."*
 
 ---
 
-## 4. ALUR BISNIS (BUSINESS FLOW)
+## 2. Tujuan dan Sasaran Produk
 
-Berikut adalah alur kerja sistem dari awal hingga akhir secara berurutan:
+### 2.1 Tujuan Bisnis
 
-```
-STEP 1 — Pekerja
-  Pilih mobil (by plat) + pilih blok lahan
-  → Konfirmasi keberangkatan
-  → Sistem catat timestamp otomatis
-  → Status: "Dalam Perjalanan"
+| # | Tujuan Bisnis | Indikator Keberhasilan |
+|---|---|---|
+| B01 | Mengurangi selisih data antara laporan pekerja dan RAM hingga 0% | Selisih data = 0 setelah sistem diterapkan |
+| B02 | Meningkatkan kepercayaan pemilik kebun terhadap data produksi | Pemilik tidak perlu verifikasi manual |
+| B03 | Mempersingkat waktu rekap laporan harian pemilik kebun | Rekap tersedia < 5 menit setelah pengiriman selesai |
+| B04 | Menghilangkan peluang manipulasi nota timbangan | Bukti foto diunggah langsung oleh Petugas RAM |
 
-STEP 2 — Sistem (otomatis)
-  Status berubah: "Dalam Perjalanan"
-  Timestamp tercatat di database
+### 2.2 Sasaran Pengguna (OKR)
 
-STEP 3 — Pekerja (setelah timbang di RAM)
-  Input berat netto (kg) hasil timbangan
-  → Status berubah: "Menunggu Nota"
+**Objective 1: Pemilik kebun mendapatkan data panen yang valid dan real-time.**
+- KR1: 100% laporan pengiriman dilengkapi foto nota sebelum dianggap selesai.
+- KR2: Dashboard tersedia dalam < 3 detik setelah Petugas RAM upload nota.
+- KR3: Tidak ada laporan yang dapat diubah setelah status 'Selesai'.
 
-STEP 4 — Petugas RAM
-  Cari data pengiriman berdasarkan plat nomor mobil
-  Upload foto nota timbangan asli (jpg/png) dari kamera/galeri
-  → Konfirmasi selesai
+**Objective 2: Pekerja kebun dapat melapor dengan cepat dan mudah dari lapangan.**
+- KR1: Form input keberangkatan dapat diselesaikan dalam < 2 menit.
+- KR2: Sistem dapat diakses dengan koneksi 3G (minimal).
 
-STEP 5 — Sistem (otomatis)
-  Status berubah: "Selesai"
-  Laporan terkunci, data final tersimpan
-  Tidak bisa diubah lagi
-
-STEP 6 — Pemilik (kapan saja)
-  Buka dashboard
-  Lihat rekapitulasi harian
-  Bandingkan data pekerja vs foto nota (side-by-side)
-  Filter berdasarkan tanggal / blok / plat
-```
-
-**Status Pengiriman (State Machine):**
-```
-perjalanan → menunggu_nota → selesai
-```
+**Objective 3: Petugas RAM dapat mengunggah bukti nota tanpa hambatan.**
+- KR1: Upload foto nota berhasil dalam < 30 detik pada koneksi 3G.
+- KR2: Sistem menampilkan pesan error yang jelas jika upload gagal.
 
 ---
 
-## 5. KEBUTUHAN FUNGSIONAL
+## 3. Pengguna dan Persona
 
-### 5.1 Must Have (Wajib Ada di v1.0)
+### Persona 1 — Pemilik Kebun
 
-#### AUTENTIKASI & AKSES
-| ID | Fitur | Deskripsi |
-|----|-------|-----------|
-| F01 | Registrasi Akun | User mendaftar dengan email/no HP + password + pilih role (pemilik / pekerja / petugas_ram) |
-| F02 | Login | Autentikasi menggunakan email/HP + password. Redirect ke halaman sesuai role setelah login berhasil |
-| F03 | Role-Based Access | Setiap role hanya bisa mengakses fitur yang sesuai. Pemilik tidak bisa akses form pekerja, dan sebaliknya |
-| F15 | Logout | Hapus session/token, redirect ke halaman login |
+- **Nama:** Ibu Irdawati, 50 tahun
+- **Pain:** Sering terjadi selisih antara laporan pekerja dan hasil timbang dari RAM. Sulit memastikan kebenaran data tanpa hadir langsung di lokasi.
+- **Gain:** Mendapatkan data panen yang transparan, akurat, dan real-time langsung dari sumber tanpa harus berada di lokasi.
+- **Fitur Utama:** Dashboard monitoring · Komparasi data visual · Filter riwayat · Kelola mobil & lahan
 
-#### PROSES PENGIRIMAN
-| ID | Fitur | Deskripsi |
-|----|-------|-----------|
-| F04 | Input Laporan Keberangkatan | Pekerja memilih mobil (dari daftar) + blok lahan (dari daftar), lalu konfirmasi keberangkatan |
-| F05 | Tracking Status Pengiriman | Status berubah otomatis: `perjalanan` → `menunggu_nota` → `selesai` |
-| F06 | Timestamp Otomatis | Waktu keberangkatan dan waktu penyelesaian tercatat otomatis oleh sistem (server-side) |
-| F09 | Validasi Format Input | Validasi format data: angka untuk berat, format file jpg/png untuk foto |
+### Persona 2 — Pekerja Kebun
 
-#### DATA PANEN & NOTA
-| ID | Fitur | Deskripsi |
-|----|-------|-----------|
-| F07 | Input Berat Netto | Pekerja menginput berat bersih (kg) hasil timbangan RAM ke dalam sistem |
-| F08 | Upload Foto Nota | Petugas RAM mengunggah foto nota timbangan (format jpg/png) dari kamera atau galeri perangkat |
-| F17 | Error Handling | Sistem menampilkan pesan error yang informatif saat: plat nomor tidak ditemukan, koneksi terputus saat upload, format file tidak valid |
+- **Nama:** Pak Untung, 47 tahun
+- **Pain:** Sering dituduh curang jika ada selisih berat, padahal bisa karena kesalahan tulis manual. Proses pelaporan lama dan tidak ada bukti digital.
+- **Gain:** Proses pelaporan simpel, cepat, dan bisa membuktikan kejujuran melalui sistem digital tanpa tuduhan.
+- **Fitur Utama:** Input keberangkatan · Pilih mobil & lahan · Input berat netto · Lihat status pengiriman
 
-#### MONITORING (KHUSUS PEMILIK)
-| ID | Fitur | Deskripsi |
-|----|-------|-----------|
-| F10 | Dashboard Rekapitulasi Harian | Tampilan ringkasan laporan panen hari ini: jumlah pengiriman, total berat, dsb |
-| F11 | Komparasi Data | Pemilik bisa membandingkan berat yang diinput pekerja vs berat yang tertera di foto nota RAM |
-| F16 | Tampilan Side-by-Side | Angka berat dari pekerja ditampilkan berdampingan dengan foto nota dari RAM |
-| F12 | Filter Riwayat Panen | Filter data berdasarkan: tanggal, blok lahan, atau plat nomor mobil |
+### Persona 3 — Petugas RAM
 
-### 5.2 Should Have (Penting tapi bukan blocker)
-
-| ID | Fitur | Deskripsi |
-|----|-------|-----------|
-| F13 | CRUD Data Mobil | Pemilik bisa tambah, lihat, ubah, dan hapus data armada kendaraan |
-| F14 | CRUD Blok Lahan | Pemilik bisa tambah, lihat, ubah, dan hapus data blok lahan |
-
-### 5.3 Won't Have (Tidak ada di v1.0)
-
-- API integrasi langsung ke sistem timbangan RAM (otomatis)
-- Fitur offline (sistem membutuhkan koneksi internet)
-- Fitur AI prediksi hasil panen
+- **Nama:** Dafi Afriza, 23 tahun
+- **Pain:** Sering diintervensi oleh pekerja untuk mengubah data nota fisik demi keuntungan pribadi. Tidak ada mekanisme perlindungan data.
+- **Gain:** Sistem yang memungkinkan upload bukti langsung dari kamera agar data tidak bisa dimanipulasi pihak lain.
+- **Fitur Utama:** Cari data mobil by plat · Upload foto nota (kamera/galeri) · Konfirmasi selesai
 
 ---
 
-## 6. USE CASE DETAIL
+## 4. Fitur dan Kebutuhan Produk
 
-| ID | Nama Use Case | Aktor | Prioritas | Deskripsi |
-|----|---------------|-------|-----------|-----------|
-| UC01 | Registrasi Akun | Semua role | High | User baru mendaftar akun, memilih role, verifikasi email/HP |
-| UC02 | Login | Semua role | High | Autentikasi masuk ke sistem, redirect sesuai role |
-| UC03 | Kelola Data Mobil | Pemilik | High | CRUD armada kendaraan: plat nomor & kapasitas kg |
-| UC04 | Kelola Blok Lahan | Pemilik | High | CRUD blok lahan: nama/kode blok & luas (ha) |
-| UC05 | Laporan Keberangkatan | Pekerja | High | Pilih mobil & lahan, konfirmasi berangkat, timestamp otomatis |
-| UC06 | Input Berat Timbangan | Pekerja | High | Masukkan berat netto (kg) setelah timbang di RAM |
-| UC07 | Upload Bukti Nota RAM | Petugas RAM | High | Foto nota asli diunggah, tutup laporan pengiriman |
-| UC08 | Monitoring Laporan | Pemilik | High | Dashboard rekapitulasi, komparasi data, filter riwayat |
-| UC09 | Logout | Semua role | High | Hapus sesi, kembali ke halaman login |
+### 4.1 Prioritas Fitur (MoSCoW)
 
----
+| Must Have | Should Have | Could Have | Won't Have (v1.0) |
+|---|---|---|---|
+| F01: Registrasi Akun | F12: Filter Riwayat | Notifikasi Push | API integrasi RAM otomatis |
+| F02: Login | F13: CRUD Data Mobil | Export laporan PDF | Mode offline (PWA) |
+| F03: Hak Akses Role | F14: CRUD Blok Lahan | Log aktivitas pengguna | Prediksi panen berbasis AI |
+| F04: Input Keberangkatan | F15: Logout Aman | | Enkripsi end-to-end lanjutan |
+| F05: Tracking Status | F17: Error Handling | | |
+| F06: Timestamp Otomatis | | | |
+| F07: Input Berat Netto | | | |
+| F08: Upload Foto Nota | | | |
+| F09: Validasi Input | | | |
+| F10: Dashboard Harian | | | |
+| F11: Komparasi Data | | | |
+| F16: Tampilan Side-by-Side | | | |
 
-## 7. MANAJEMEN DATA MASTER
+### 4.2 Deskripsi Fitur Detail
 
-### 7.1 Data Mobil (dikelola oleh Pemilik — UC03)
+#### 4.2.1 Autentikasi & Manajemen Akses (F01–F03, F15)
 
-- **Field:** Nomor Plat (unik/UNIQUE), Kapasitas (kg)
-- **Operasi:** Tambah · Lihat · Edit · Hapus
-- **Catatan penting:** Data ini muncul sebagai dropdown/pilihan saat Pekerja mengisi laporan keberangkatan
+| Kode | Deskripsi Fitur | Acceptance Criteria |
+|---|---|---|
+| F01 | Registrasi akun dengan pilihan Email atau Nomor HP. Pengguna memilih role: Pemilik Kebun, Pekerja Kebun, atau Petugas RAM. Verifikasi melalui link email atau OTP SMS. | • Form tervalidasi sebelum submit • Role tersimpan di database • Redirect ke login setelah berhasil |
+| F02 | Login menggunakan Email/HP dan password. Sistem mendeteksi role dan mengarahkan ke dashboard yang sesuai. | • Token sesi dibuat setelah login • Redirect otomatis sesuai role • Pesan error jelas jika gagal |
+| F03 | Hak akses berbasis role. Pemilik: akses penuh. Pekerja: input & lihat status. Petugas RAM: upload nota & cari mobil. | • Route terlindungi per role • Akses unauthorized ditolak dengan 403 • Menu disesuaikan per role |
+| F15 | Tombol logout di semua halaman. Setelah logout, sesi dihapus dan token tidak bisa digunakan kembali. | • Sesi dihapus dari server • Redirect ke halaman login • Token tidak valid setelah logout |
 
-### 7.2 Data Blok Lahan (dikelola oleh Pemilik — UC04)
+#### 4.2.2 Alur Pengiriman Panen (F04–F09)
 
-- **Field:** Nama/Kode Blok, Luas (ha)
-- **Operasi:** Tambah · Lihat · Edit · Hapus
-- **Catatan penting:** Data ini muncul sebagai dropdown/pilihan saat Pekerja mengisi laporan keberangkatan
+| Step | Kode | Deskripsi | Acceptance Criteria |
+|---|---|---|---|
+| 1 | F04 | Pekerja memilih nomor plat mobil dari daftar terdaftar, memilih blok lahan asal, lalu konfirmasi keberangkatan. | • Mobil dipilih dari dropdown • Lahan dipilih dari list • Form tidak bisa submit jika kosong |
+| 2 | F05 | Status pengiriman berubah otomatis: Dalam Perjalanan → Menunggu Nota → Selesai. | • Transisi status sesuai alur • Tidak bisa mundur ke status sebelumnya • Status tampil real-time di dashboard |
+| 3 | F06 | Sistem mencatat timestamp keberangkatan (saat F04) dan timestamp penyelesaian (saat F08 upload). | • Waktu disimpan otomatis • Format: YYYY-MM-DD HH:MM:SS • Tidak bisa diedit manual |
+| 4 | F07 | Pekerja memasukkan angka berat bersih (Netto) dalam satuan kilogram sesuai hasil timbangan RAM. | • Hanya menerima angka positif • Minimal 1 karakter • Tersimpan di draft laporan |
+| 5 | F08 | Petugas RAM mengunggah foto nota timbangan asli dari kamera atau galeri. Upload menutup laporan. | • Format: .jpg / .png • Ukuran maks: 5MB • Upload gagal tampilkan retry |
+| 6 | F09 | Sistem memvalidasi semua input sebelum disimpan: format angka, format file gambar, field wajib. | • Pesan error spesifik per field • Validasi sisi server dan client • Input invalid tidak tersimpan |
 
----
+#### 4.2.3 Monitoring Dashboard (F10–F12, F16)
 
-## 8. ARSITEKTUR & STACK TEKNOLOGI
-
-### 8.1 Arsitektur Sistem
-
-```
-CLIENT (Browser/Smartphone)
-    ↕ Inertia.js (SSR-like, bukan REST terpisah)
-SERVER (Laravel 12)
-    ↕
-DATABASE (MySQL)
-```
-
-Sistem menggunakan **Laravel 12 React Starter Kit** — stack resmi Laravel yang menggabungkan Laravel sebagai backend + React sebagai frontend melalui **Inertia.js**. Tidak ada REST API terpisah; Laravel langsung merender halaman React via Inertia.
-
-- **Frontend:** React.js + TypeScript + Tailwind CSS
-  - Dirender via Inertia.js (bukan SPA mandiri)
-  - UI responsif, mobile-first
-  - Akses via browser, tidak perlu instalasi terpisah
-- **Backend:** Laravel 12
-  - Routing, Controller, Model menggunakan konvensi Laravel
-  - Autentikasi menggunakan Laravel Breeze (sudah include di starter kit)
-  - File upload menggunakan Laravel Storage (`storage/app/public`)
-  - Role-based access menggunakan Laravel Middleware
-- **Bridge:** Inertia.js
-  - Data dari Controller Laravel dikirim ke React component via `Inertia::render()` / `return Inertia::render('PageName', ['data' => $data])`
-  - Form submission menggunakan Inertia `useForm` hook, bukan fetch/axios manual
-- **Database:** MySQL (via Laravel Eloquent ORM + Migration)
-- **Local Dev:** Laragon / Herd / `php artisan serve` + `npm run dev`
-
-### 8.2 Konvensi Penting Laravel Starter Kit
-
-| Aspek | Implementasi |
-|-------|-------------|
-| Routing | `routes/web.php` — semua route didefinisikan di sini |
-| Controller | `app/Http/Controllers/` — satu controller per resource |
-| Model | `app/Models/` — Eloquent ORM, relasi via `hasMany`/`belongsTo` |
-| Migration | `database/migrations/` — struktur tabel didefinisikan di sini |
-| React Pages | `resources/js/pages/` — setiap halaman adalah React component |
-| React Components | `resources/js/components/` — komponen reusable |
-| Inertia Render | `return Inertia::render('NamaPage', ['prop' => $nilai])` |
-| Form | Gunakan `useForm` dari `@inertiajs/react`, bukan `useState` biasa |
-| Auth | Sudah disediakan oleh Breeze — `Auth::user()`, middleware `auth` |
-| File Upload | `$request->file('foto')->store('nota', 'public')` |
-| Role Guard | Middleware custom: `app/Http/Middleware/RoleMiddleware.php` |
-
-### 8.3 Tools Pengembangan
-
-| Tool | Fungsi |
-|------|--------|
-| Visual Studio Code | Code editor |
-| Laragon / Laravel Herd | Local server (PHP + MySQL) |
-| Composer | PHP package manager |
-| npm | JS package manager |
-| Chrome / Firefox | Browser testing |
+| Kode | Deskripsi | Acceptance Criteria |
+|---|---|---|
+| F10 | Dashboard rekapitulasi harian menampilkan: total tonase (kg), jumlah ritase (frekuensi pengiriman), dan daftar pengiriman hari ini dengan statusnya. | • Data ter-refresh otomatis • Menampilkan total & detail • Status badge berwarna sesuai status |
+| F11 | Komparasi data: berat yang diinput Pekerja ditampilkan berdampingan dengan foto nota yang diunggah Petugas RAM. | • Side-by-side dalam 1 layar • Foto bisa diperbesar • Tidak bisa edit setelah selesai |
+| F12 | Filter riwayat panen berdasarkan: rentang tanggal, nama blok lahan, atau plat nomor mobil. | • Filter bisa dikombinasi • Hasil muncul < 2 detik • Export ke format yang dibutuhkan |
+| F16 | Tampilan side-by-side: angka berat (kiri) vs foto nota (kanan) dalam satu layar verifikasi. | • Layout responsif di mobile • Foto bisa di-zoom • Label jelas per kolom |
 
 ---
 
-## 9. DATABASE SCHEMA (MySQL)
+## 5. Use Case & Alur Pengguna
 
-### Tabel: `users`
+### 5.1 Ringkasan Use Case
 
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| id | INT, PK, AUTO_INCREMENT | Primary key |
-| nama | VARCHAR | Nama lengkap pengguna |
-| email | VARCHAR, UNIQUE (nullable) | Email login |
-| no_hp | VARCHAR, UNIQUE (nullable) | Nomor HP login (alternatif email) |
-| password | VARCHAR | Password ter-hash |
-| role | ENUM('pemilik', 'pekerja', 'petugas_ram') | Role pengguna |
-| created_at | TIMESTAMP | Waktu registrasi |
+| ID | Nama Use Case | Aktor | Prioritas | Deskripsi Singkat |
+|---|---|---|---|---|
+| UC01 | Registrasi Akun | Semua | HIGH | Daftar akun baru, pilih role, verifikasi email/HP |
+| UC02 | Login | Semua | HIGH | Autentikasi, redirect ke dashboard sesuai role |
+| UC03 | Kelola Data Mobil | Pemilik | HIGH | CRUD armada kendaraan (plat nomor & kapasitas) |
+| UC04 | Kelola Blok Lahan | Pemilik | HIGH | CRUD blok lahan (nama/kode & luas hektar) |
+| UC05 | Laporan Keberangkatan | Pekerja | HIGH | Pilih mobil & lahan, konfirmasi berangkat, timestamp otomatis |
+| UC06 | Input Berat Timbangan | Pekerja | HIGH | Masukkan berat netto (kg) setelah ditimbang di RAM |
+| UC07 | Upload Bukti Nota RAM | Petugas RAM | HIGH | Foto nota asli diunggah, tutup & selesaikan laporan |
+| UC08 | Monitoring Laporan | Pemilik | HIGH | Dashboard rekapitulasi, komparasi data, filter riwayat |
+| UC09 | Logout | Semua | HIGH | Hapus sesi, kembali ke halaman login |
 
-### Tabel: `mobil`
+### 5.2 Alur Utama — Happy Path
 
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| id | INT, PK, AUTO_INCREMENT | Primary key |
-| plat_nomor | VARCHAR, UNIQUE | Nomor plat kendaraan (harus unik) |
-| kapasitas_kg | DECIMAL / INT | Kapasitas angkut dalam kg |
-| created_at | TIMESTAMP | Waktu data dibuat |
+| Step | Aktor | Aksi | Response Sistem | Status Pengiriman |
+|---|---|---|---|---|
+| 1 | Pekerja | Login ke aplikasi | Redirect ke dashboard Pekerja | — |
+| 2 | Pekerja | Buka menu Laporan Pengiriman | Tampilkan form keberangkatan | — |
+| 3 | Pekerja | Pilih mobil & blok lahan, konfirmasi | Simpan data, catat timestamp | Dalam Perjalanan |
+| 4 | Pekerja | Tiba di RAM, input berat netto (kg) | Simpan angka sebagai draft | Menunggu Nota |
+| 5 | Petugas RAM | Cari mobil by plat, upload foto nota | Simpan foto, tutup laporan | Selesai |
+| 6 | Pemilik | Buka dashboard, cek rekapitulasi | Tampilkan data + foto side-by-side | Selesai ✅ |
 
-### Tabel: `lahan`
+### 5.3 Skenario Alternate & Error
 
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| id | INT, PK, AUTO_INCREMENT | Primary key |
-| nama_blok | VARCHAR | Nama atau kode blok lahan |
-| luas_ha | DECIMAL | Luas lahan dalam hektare |
-| created_at | TIMESTAMP | Waktu data dibuat |
-
-### Tabel: `pengiriman`
-
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| id | INT, PK, AUTO_INCREMENT | Primary key |
-| mobil_id | INT, FK → mobil.id | Kendaraan yang digunakan |
-| lahan_id | INT, FK → lahan.id | Blok lahan asal panen |
-| pekerja_id | INT, FK → users.id | Pekerja yang lapor |
-| waktu_berangkat | TIMESTAMP | Di-set otomatis oleh sistem saat lapor keberangkatan |
-| berat_netto_kg | DECIMAL / INT | Berat diinput pekerja setelah timbang |
-| status | ENUM('perjalanan', 'menunggu_nota', 'selesai') | Status pengiriman saat ini |
-
-### Tabel: `nota`
-
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| id | INT, PK, AUTO_INCREMENT | Primary key |
-| pengiriman_id | INT, FK → pengiriman.id | Relasi ke pengiriman |
-| petugas_id | INT, FK → users.id | Petugas RAM yang upload |
-| foto_nota_path | VARCHAR | Path/URL file foto nota yang tersimpan |
-| waktu_upload | TIMESTAMP | Waktu foto diunggah |
-
-### Relasi Antar Tabel
-
-```
-users (1) ----< pengiriman >---- (1) mobil
-                   |
-                   |----(1) lahan
-                   |
-                   v (1)
-                 nota >---- (1) users (petugas)
-```
+| Use Case | Kondisi Error | Pesan Sistem | Tindakan Sistem |
+|---|---|---|---|
+| UC01 — Register | Email/HP sudah terdaftar | "Akun sudah ada. Silakan login." | Highlight field, tidak simpan data |
+| UC02 — Login | Password salah | "Email/HP atau password salah." | Tampilkan pesan, allow retry |
+| UC05 — Berangkat | Plat mobil tidak terdaftar | "Plat nomor tidak ditemukan." | Tolak submit, arahkan ke admin |
+| UC07 — Upload Nota | Format file bukan jpg/png | "Format file tidak didukung." | Tolak file, minta ulang upload |
+| UC07 — Upload Nota | Koneksi terputus saat upload | "Upload gagal. Coba lagi." | Tampilkan tombol retry |
+| UC08 — Dashboard | Belum ada aktivitas hari ini | "Belum ada pengiriman hari ini." | Tampilkan empty state |
 
 ---
 
-## 10. ROUTES & CONTROLLERS (LARAVEL)
+## 6. Arsitektur & Stack Teknologi
 
-Karena menggunakan Inertia.js, tidak ada REST API terpisah. Semua route didefinisikan di `routes/web.php` dan dikonsumsi langsung oleh React via Inertia.
+### 6.1 Stack Teknologi
 
-### Auth (sudah disediakan Laravel Breeze)
-| Method | Route | Controller | Keterangan |
-|--------|-------|------------|------------|
-| GET | `/register` | `RegisteredUserController@create` | Tampilkan form register |
-| POST | `/register` | `RegisteredUserController@store` | Proses registrasi + set role |
-| GET | `/login` | `AuthenticatedSessionController@create` | Tampilkan form login |
-| POST | `/login` | `AuthenticatedSessionController@store` | Proses login |
-| POST | `/logout` | `AuthenticatedSessionController@destroy` | Logout & hapus sesi |
+| Layer | Teknologi | Detail & Justifikasi |
+|---|---|---|
+| Frontend | React.js + Tailwind CSS | Framework berbasis komponen untuk UI dinamis. Tailwind CSS untuk desain responsif mobile-first. ES6+ JavaScript. |
+| Styling | Tailwind CSS | Utility-first CSS framework. Ringan, responsif, mudah dikustomisasi untuk tampilan lapangan. |
+| Backend Runtime | Node.js + npm | Runtime JavaScript untuk server-side. Mendukung ecosystem yang sama dengan frontend. |
+| Database | MySQL | Relational database untuk menyimpan data users, mobil, lahan, pengiriman, dan nota. |
+| Local Dev Server | XAMPP / Laragon | Local server untuk development. MySQL terbundel, mudah dikonfigurasi. |
+| Communication | HTTP/HTTPS + JSON | REST-like API. HTTPS wajib untuk keamanan data. Format JSON untuk pertukaran data. |
+| Hosting | Vercel / Netlify / GitHub Pages | Static/cloud hosting untuk frontend. Mendukung Continuous Deployment. |
+| Code Editor | Visual Studio Code | IDE utama tim pengembang dengan ekstensi React dan ESLint. |
+| Browser Testing | Chrome, Firefox, Edge, Safari | Semua browser modern yang didukung sistem (versi terbaru). |
 
-> **Catatan:** Tambahkan field `role` (ENUM) ke tabel `users` via migration baru. Modifikasi `RegisteredUserController@store` untuk menyimpan role yang dipilih user.
+### 6.2 Database Schema
 
-### Data Master — Mobil (hanya Pemilik)
-| Method | Route | Controller@method | Inertia Page |
-|--------|-------|-------------------|--------------|
-| GET | `/mobil` | `MobilController@index` | `Mobil/Index` |
-| GET | `/mobil/create` | `MobilController@create` | `Mobil/Create` |
-| POST | `/mobil` | `MobilController@store` | — (redirect) |
-| GET | `/mobil/{id}/edit` | `MobilController@edit` | `Mobil/Edit` |
-| PUT | `/mobil/{id}` | `MobilController@update` | — (redirect) |
-| DELETE | `/mobil/{id}` | `MobilController@destroy` | — (redirect) |
+#### Tabel: users
 
-### Data Master — Lahan (hanya Pemilik)
-| Method | Route | Controller@method | Inertia Page |
-|--------|-------|-------------------|--------------|
-| GET | `/lahan` | `LahanController@index` | `Lahan/Index` |
-| GET | `/lahan/create` | `LahanController@create` | `Lahan/Create` |
-| POST | `/lahan` | `LahanController@store` | — (redirect) |
-| GET | `/lahan/{id}/edit` | `LahanController@edit` | `Lahan/Edit` |
-| PUT | `/lahan/{id}` | `LahanController@update` | — (redirect) |
-| DELETE | `/lahan/{id}` | `LahanController@destroy` | — (redirect) |
+| Kolom | Tipe Data | Constraint | Keterangan |
+|---|---|---|---|
+| id | INT | PK, AUTO_INCREMENT | Primary key unik untuk setiap user |
+| nama | VARCHAR(100) | NOT NULL | Nama lengkap pengguna |
+| email | VARCHAR(150) | UNIQUE, NULLABLE | Email untuk registrasi via email |
+| no_hp | VARCHAR(20) | UNIQUE, NULLABLE | Nomor HP untuk registrasi via HP |
+| password | VARCHAR(255) | NOT NULL | Password ter-hash (bcrypt) |
+| role | ENUM | NOT NULL | Nilai: `pemilik` \| `pekerja` \| `petugas_ram` |
+| created_at | DATETIME | DEFAULT NOW() | Waktu registrasi akun |
 
-### Pengiriman
-| Method | Route | Controller@method | Role | Inertia Page |
-|--------|-------|-------------------|------|--------------|
-| GET | `/pengiriman` | `PengirimanController@index` | Pemilik | `Pengiriman/Index` |
-| GET | `/pengiriman/create` | `PengirimanController@create` | Pekerja | `Pengiriman/Create` |
-| POST | `/pengiriman` | `PengirimanController@store` | Pekerja | — (redirect) |
-| PATCH | `/pengiriman/{id}/berat` | `PengirimanController@updateBerat` | Pekerja | — (redirect) |
-| GET | `/pengiriman/cari` | `PengirimanController@cariByPlat` | Petugas RAM | `Pengiriman/Cari` |
+#### Tabel: mobil
 
-### Nota
-| Method | Route | Controller@method | Role | Keterangan |
-|--------|-------|-------------------|------|------------|
-| GET | `/nota/{pengiriman_id}` | `NotaController@create` | Petugas RAM | Tampilkan form upload |
-| POST | `/nota/{pengiriman_id}` | `NotaController@store` | Petugas RAM | Upload foto, ubah status → selesai |
+| Kolom | Tipe Data | Constraint | Keterangan |
+|---|---|---|---|
+| id | INT | PK, AUTO_INCREMENT | Primary key |
+| plat_nomor | VARCHAR(20) | UNIQUE, NOT NULL | Nomor plat kendaraan (unik) |
+| kapasitas_kg | INT | NOT NULL | Estimasi kapasitas muatan dalam kilogram |
+| created_at | DATETIME | DEFAULT NOW() | Waktu data ditambahkan |
 
-### Dashboard
-| Method | Route | Controller@method | Role | Inertia Page |
-|--------|-------|-------------------|------|--------------|
-| GET | `/dashboard` | `DashboardController@index` | Semua (redirect sesuai role) | `Dashboard/Pemilik`, `Dashboard/Pekerja`, `Dashboard/Ram` |
+#### Tabel: lahan
 
-### Middleware & Route Groups (routes/web.php)
-```php
-// Semua route di bawah ini butuh login
-Route::middleware(['auth'])->group(function () {
+| Kolom | Tipe Data | Constraint | Keterangan |
+|---|---|---|---|
+| id | INT | PK, AUTO_INCREMENT | Primary key |
+| nama_blok | VARCHAR(50) | NOT NULL | Nama atau kode blok lahan (misal: A1, B2) |
+| luas_ha | DECIMAL(8,2) | NOT NULL | Luas lahan dalam hektar |
+| created_at | DATETIME | DEFAULT NOW() | Waktu data ditambahkan |
 
-    // Hanya Pemilik
-    Route::middleware(['role:pemilik'])->group(function () {
-        Route::resource('mobil', MobilController::class);
-        Route::resource('lahan', LahanController::class);
-        Route::get('/dashboard', [DashboardController::class, 'pemilik']);
-        Route::get('/pengiriman', [PengirimanController::class, 'index']);
-    });
+#### Tabel: pengiriman
 
-    // Hanya Pekerja
-    Route::middleware(['role:pekerja'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'pekerja']);
-        Route::get('/pengiriman/create', [PengirimanController::class, 'create']);
-        Route::post('/pengiriman', [PengirimanController::class, 'store']);
-        Route::patch('/pengiriman/{id}/berat', [PengirimanController::class, 'updateBerat']);
-    });
+| Kolom | Tipe Data | Constraint | Keterangan |
+|---|---|---|---|
+| id | INT | PK, AUTO_INCREMENT | Primary key |
+| mobil_id | INT | FK → mobil.id | Referensi ke tabel mobil |
+| lahan_id | INT | FK → lahan.id | Referensi ke tabel lahan |
+| pekerja_id | INT | FK → users.id | Referensi ke tabel users (role: pekerja) |
+| waktu_berangkat | DATETIME | NOT NULL | Timestamp keberangkatan (otomatis) |
+| berat_netto_kg | INT | NULLABLE | Berat bersih hasil timbangan (diisi pekerja) |
+| status | ENUM | DEFAULT 'perjalanan' | Nilai: `perjalanan` \| `menunggu_nota` \| `selesai` |
+| created_at | DATETIME | DEFAULT NOW() | Waktu record dibuat |
 
-    // Hanya Petugas RAM
-    Route::middleware(['role:petugas_ram'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'ram']);
-        Route::get('/pengiriman/cari', [PengirimanController::class, 'cariByPlat']);
-        Route::get('/nota/{pengiriman_id}', [NotaController::class, 'create']);
-        Route::post('/nota/{pengiriman_id}', [NotaController::class, 'store']);
-    });
-});
-```
+#### Tabel: nota
+
+| Kolom | Tipe Data | Constraint | Keterangan |
+|---|---|---|---|
+| id | INT | PK, AUTO_INCREMENT | Primary key |
+| pengiriman_id | INT | FK → pengiriman.id | Referensi ke tabel pengiriman |
+| petugas_id | INT | FK → users.id | Referensi ke tabel users (role: petugas_ram) |
+| foto_nota_path | VARCHAR(500) | NOT NULL | Path/URL file foto nota yang diunggah |
+| waktu_upload | DATETIME | DEFAULT NOW() | Timestamp saat nota diunggah (otomatis) |
 
 ---
 
-## 11. HALAMAN / SCREEN (FRONTEND)
+## 7. Kebutuhan Non-Fungsional
 
-### Halaman Shared (Semua Role)
-- **Login Page** — Form email/HP + password
-- **Register Page** — Form registrasi + dropdown pilih role
+Berdasarkan ISO/IEC 25010. Semua item **Must Have** wajib terpenuhi sebelum sistem dapat diluncurkan.
 
-### Halaman Pekerja
-- **Dashboard Pekerja** — Lihat daftar pengiriman milik sendiri + statusnya
-- **Form Keberangkatan** — Dropdown pilih mobil (by plat) + dropdown pilih lahan + tombol konfirmasi
-- **Form Input Berat** — Input angka kg + submit (hanya aktif jika status = `perjalanan`)
-
-### Halaman Petugas RAM
-- **Halaman Cari Pengiriman** — Search by plat nomor
-- **Halaman Upload Nota** — Preview data pengiriman + tombol akses kamera/galeri + upload + konfirmasi selesai
-
-### Halaman Pemilik
-- **Dashboard Utama** — Rekapitulasi harian (total pengiriman, total kg), status badge per pengiriman
-- **Detail Komparasi** — Tampilan side-by-side: angka berat (pekerja) vs foto nota (RAM)
-- **Riwayat Panen** — List semua pengiriman + filter tanggal / blok / plat
-- **Kelola Mobil** — Tabel data mobil + form tambah/edit + tombol hapus
-- **Kelola Lahan** — Tabel data lahan + form tambah/edit + tombol hapus
-
----
-
-## 12. PEMBAGIAN TUGAS TIM
-
-### Frontend Developer (React + Inertia)
-
-| Area | Detail |
-|------|--------|
-| Halaman Auth | Modifikasi page `Register` bawaan Breeze — tambah dropdown pilih role |
-| Dashboard Pemilik | `resources/js/pages/Dashboard/Pemilik.tsx` — rekapitulasi harian, komparasi side-by-side, filter riwayat |
-| Form Pekerja | `Pengiriman/Create.tsx` — dropdown mobil & lahan (dari props Inertia), input berat netto, lihat status |
-| Upload RAM | `Pengiriman/Cari.tsx` + `Nota/Create.tsx` — search plat, akses kamera/galeri, upload foto |
-| Manajemen Data | `Mobil/Index.tsx`, `Lahan/Index.tsx` — tabel CRUD + form tambah/edit + dialog konfirmasi hapus |
-| UI/UX | Responsif mobile-first, Tailwind CSS, status badge, error message dari `$page.props.errors` |
-| Form Handling | Selalu gunakan `useForm` dari `@inertiajs/react` untuk semua form submission & upload |
-
-### Backend Developer (Laravel)
-
-| Area | Detail |
-|------|--------|
-| Database | Buat migration untuk semua tabel: `users` (tambah kolom `role`), `mobil`, `lahan`, `pengiriman`, `nota` |
-| Auth & Role | Modifikasi `RegisteredUserController` untuk simpan role. Buat `RoleMiddleware` dan daftarkan di `bootstrap/app.php` |
-| Controller Pengiriman | `PengirimanController` — store (buat laporan + timestamp), updateBerat, cariByPlat, index (dengan filter) |
-| Controller Nota | `NotaController` — store: validasi file jpg/png, simpan via `Storage::disk('public')`, update status pengiriman → selesai |
-| Controller Mobil & Lahan | CRUD standar Laravel Resource Controller, validasi `plat_nomor` unique |
-| Validasi | Gunakan Laravel Form Request (`php artisan make:request`) untuk setiap store/update |
-| Inertia Response | Semua controller return `Inertia::render('NamaPage', ['data' => $data])`, bukan JSON |
+| Kode | Karakteristik | Sub-Karakteristik | Deskripsi | Prioritas |
+|---|---|---|---|---|
+| NF01 | Usability | Learnability | Sistem mudah dipahami pengguna non-teknis (pekerja kebun) | Must Have |
+| NF02 | Usability | Operability | Antarmuka sederhana dan mudah dioperasikan via smartphone | Must Have |
+| NF03 | Usability | Accessibility | Tampilan responsif di semua ukuran layar (mobile-first) | Must Have |
+| NF04 | Performance | Time Behavior | Waktu respons sistem maksimal 3 detik untuk semua operasi | Must Have |
+| NF05 | Performance | Resource Utilization | Sistem berjalan pada perangkat dengan RAM minimal 2GB | Should Have |
+| NF06 | Reliability | Availability | Sistem dapat diakses kapan saja (target uptime 99%) | Must Have |
+| NF07 | Reliability | Fault Tolerance | Sistem menangani koneksi tidak stabil dengan mekanisme retry | Must Have |
+| NF08 | Security | Confidentiality | Data hanya dapat diakses oleh pengguna dengan hak akses sesuai | Must Have |
+| NF09 | Security | Integrity | Data laporan tidak dapat dimodifikasi setelah status Selesai | Must Have |
+| NF10 | Security | Authentication | Wajib login sebelum mengakses fitur apapun | Must Have |
+| NF11 | Security | Authorization | Hak akses dibatasi ketat berdasarkan role pengguna | Must Have |
+| NF12 | Security | Data Validation | Validasi input sisi client dan server (angka, format file, dll) | Must Have |
+| NF13 | Compatibility | Interoperability | Sistem dapat diakses via Chrome, Firefox, Edge, Safari terbaru | Should Have |
+| NF15 | Maintainability | Modifiability | Kode dapat dikembangkan atau diperbaiki dengan mudah | Should Have |
+| NF16 | Maintainability | Modularity | Struktur kode modular per fitur/komponen | Should Have |
+| NF17 | Portability | Adaptability | Sistem dapat digunakan di berbagai sistem operasi | Should Have |
+| NF18 | Portability | Installability | Tidak memerlukan instalasi — berbasis browser web | Must Have |
+| NF20 | Reliability | Recoverability | Mekanisme retry otomatis jika upload nota gagal | Should Have |
 
 ---
 
-## 13. KEBUTUHAN NON-FUNGSIONAL
+## 8. Batasan Sistem & Asumsi
 
-Berdasarkan standar ISO/IEC 25010:
+### 8.1 Batasan Sistem (v1.0)
 
-### Usability
-- NF01: Sistem harus dapat digunakan pengguna non-teknis tanpa pelatihan khusus
-- NF02: UI sederhana, dioptimalkan untuk penggunaan via smartphone
-- NF03: Tampilan responsif di semua ukuran perangkat (mobile, tablet, desktop)
+1. Sistem hanya dikembangkan dalam bentuk aplikasi web. Aplikasi mobile native (Android/iOS) tidak masuk cakupan v1.0.
+2. Sistem hanya mencakup monitoring, pencatatan, dan validasi data panen sawit — bukan manajemen tenaga kerja, perawatan kebun, atau penjadwalan.
+3. Tidak ada integrasi API langsung dengan sistem internal pabrik/RAM. Semua data dari RAM diinput secara manual oleh Petugas RAM.
+4. Sistem tidak dirancang untuk beroperasi secara offline. Fitur upload dan sinkronisasi membutuhkan koneksi internet aktif.
+5. Keakuratan data sangat bergantung pada kejujuran pengguna dalam menginput data lapangan.
+6. Tidak ada fitur analisis lanjutan berbasis AI atau prediksi hasil panen pada versi awal.
+7. Keamanan difokuskan pada autentikasi dan role-based access. Enkripsi end-to-end dan audit keamanan eksternal belum masuk cakupan.
 
-### Performance
-- NF04: Response time API ≤ 3 detik dalam kondisi normal
-- NF05: Sistem berjalan lancar pada perangkat dengan RAM minimum 2GB
+### 8.2 Asumsi
 
-### Reliability
-- NF06: Sistem harus dapat diakses 24/7 (tidak ada downtime terjadwal)
-- NF07: Sistem tahan terhadap koneksi tidak stabil — ada mekanisme retry saat upload foto gagal
-- NF20: Implementasi mekanisme retry otomatis saat upload foto gagal
+- Pemilik kebun memiliki akses smartphone dan koneksi internet minimal 3G.
+- Pekerja kebun dapat mengoperasikan aplikasi web dasar (form input, pilih dari dropdown).
+- Petugas RAM memiliki smartphone dengan kamera yang berfungsi untuk foto nota.
+- Semua pengguna melakukan registrasi akun sebelum menggunakan sistem.
+- Data plat nomor mobil dan blok lahan sudah diinput Pemilik sebelum pekerja mulai beroperasi.
 
-### Security
-- NF08: Data hanya dapat diakses oleh pengguna yang berwenang sesuai role
-- NF09: Data laporan pengiriman yang sudah selesai tidak dapat diubah tanpa izin
-- NF10: Login wajib untuk mengakses semua fitur sistem
-- NF11: Hak akses berdasarkan role diterapkan di level API (server-side, bukan hanya UI)
-- NF12: Validasi input: berat harus angka, file upload harus jpg/png
+### 8.3 Dependensi
 
-### Portability
-- NF13: Kompatibel dengan berbagai browser modern (Chrome, Firefox, Safari, Edge)
-- NF17: Berjalan di berbagai sistem operasi (Windows, macOS, Android, iOS)
-- NF18: Tidak memerlukan instalasi aplikasi — akses via web browser
-
-### Maintainability
-- NF15: Kode mudah dikembangkan dan diperbaiki
-- NF16: Struktur kode modular, dipisahkan per fitur/domain
+| Teknologi | Peran |
+|---|---|
+| React.js | Framework frontend utama untuk membangun UI komponen |
+| Tailwind CSS | Framework CSS untuk desain responsif mobile-first |
+| Node.js / npm | Runtime dan package manager untuk pengembangan |
+| MySQL | Database relasional untuk semua data sistem |
+| XAMPP / Laragon | Local server development environment |
+| Browser Modern | Chrome, Firefox, Edge, Safari (versi terbaru) |
+| Hosting Cloud | Vercel, Netlify, atau GitHub Pages untuk deployment |
 
 ---
 
-## 14. CONSTRAINTS & CATATAN IMPLEMENTASI
+## 9. Pembagian Tugas Tim
 
-1. **Mobile-first adalah prioritas utama** — mayoritas pengguna (pekerja dan petugas RAM) mengakses sistem dari HP di lapangan
-2. **Upload foto menggunakan akses kamera/galeri perangkat** — gunakan `<input type="file" accept="image/*" capture="environment">` di frontend
-3. **Plat nomor bersifat UNIQUE** di database — harus ada validasi duplikasi saat tambah data mobil
-4. **Status pengiriman bersifat satu arah** — tidak bisa mundur dari `selesai` ke `menunggu_nota` atau `perjalanan`
-5. **Laporan yang sudah `selesai` tidak bisa diedit** — backend harus enforce ini
-6. **Role ditentukan saat registrasi** — tidak ada fitur ubah role setelah registrasi
-7. **Format file upload:** hanya jpg dan png yang diizinkan — validasi di frontend DAN backend
-8. **Koordinasi API:** Frontend dan Backend harus sepakat format response JSON sebelum implementasi (field names, struktur data, kode error)
+### Frontend Developer
+
+- **Halaman Auth:** Login, Register (pilih role), Logout page
+- **Dashboard Pemilik:** Rekapitulasi harian, komparasi side-by-side, filter riwayat
+- **Form Pekerja:** Pilih mobil (dropdown), pilih lahan, input berat netto, lihat status
+- **Halaman Petugas RAM:** Cari mobil by plat, akses kamera/galeri, upload foto nota
+- **Manajemen Data Master:** CRUD mobil & lahan (form + tabel + delete confirmation modal)
+- **UI/UX & Responsivitas:** Mobile-first Tailwind CSS, status badge berwarna, error message UI
+- **Routing & Guards:** React Router dengan proteksi route per role
+- **State Management:** Kelola state login, form, dan data antar komponen
+
+### Backend Developer
+
+- **Database Setup:** Buat database MySQL, semua tabel (users, mobil, lahan, pengiriman, nota), dan relasi FK
+- **Auth & Session:** Register, login, logout endpoint. JWT atau session-based. Role-based middleware.
+- **API Pengiriman:** POST create pengiriman, PUT update status, GET detail & list. Timestamp otomatis.
+- **API Berat & Nota:** PUT input berat netto, POST upload foto nota, validasi format file, simpan path.
+- **API Mobil & Lahan:** CRUD endpoint untuk data master. Validasi plat nomor unik, nama blok wajib.
+- **API Dashboard:** GET rekapitulasi harian, GET riwayat dengan filter (tanggal, blok, plat).
+- **Validasi & Error:** Validasi input sisi server, error response terstandar, HTTP status code tepat.
+- **Security:** Role guard middleware, sanitasi input, prevent SQL injection.
+
+### 9.1 Titik Integrasi Frontend ↔ Backend
+
+| Method | Endpoint | Deskripsi | Request Body | Response |
+|---|---|---|---|---|
+| POST | /auth/register | Registrasi akun baru | `{ nama, email/no_hp, password, role }` | `{ success, message }` |
+| POST | /auth/login | Login pengguna | `{ email/no_hp, password }` | `{ token, role, nama }` |
+| POST | /auth/logout | Logout & hapus sesi | Header: Bearer token | `{ success }` |
+| GET | /mobil | List semua mobil | — | `[{ id, plat_nomor, kapasitas_kg }]` |
+| POST | /mobil | Tambah data mobil | `{ plat_nomor, kapasitas_kg }` | `{ id, plat_nomor }` |
+| PUT | /mobil/:id | Edit data mobil | `{ plat_nomor, kapasitas_kg }` | `{ success }` |
+| DELETE | /mobil/:id | Hapus data mobil | — | `{ success }` |
+| GET | /lahan | List semua lahan | — | `[{ id, nama_blok, luas_ha }]` |
+| POST | /lahan | Tambah blok lahan | `{ nama_blok, luas_ha }` | `{ id, nama_blok }` |
+| POST | /pengiriman | Buat laporan pengiriman | `{ mobil_id, lahan_id }` | `{ id, status, waktu_berangkat }` |
+| PUT | /pengiriman/:id/berat | Input berat netto | `{ berat_netto_kg }` | `{ success, status }` |
+| POST | /pengiriman/:id/nota | Upload foto nota | FormData: `{ foto_nota }` | `{ success, foto_path }` |
+| GET | /dashboard | Rekapitulasi harian | Query: `?tanggal=` | `{ total_kg, total_ritase, list[] }` |
+| GET | /pengiriman | Riwayat pengiriman | Query: `?tanggal&blok&plat` | `[{ id, mobil, lahan, berat, status, nota }]` |
 
 ---
 
-## 15. RINGKASAN QUICK REFERENCE
+## 10. Kriteria Sukses & Definition of Done
 
-```
-SISTEM      : SISTRA-SAWIT
-TUJUAN      : Transparansi & akuntabilitas data panen kelapa sawit
-STACK       : React.js + Tailwind (FE) | Node.js + MySQL (BE)
-ROLE        : pemilik | pekerja | petugas_ram
-STATUS      : perjalanan → menunggu_nota → selesai
-TABEL DB    : users, mobil, lahan, pengiriman, nota
-USE CASE    : 9 use case (UC01–UC09), semua prioritas HIGH
-MUST-HAVE   : F01–F17 (auth, pengiriman, berat, nota, dashboard, filter)
-WON'T HAVE  : API otomatis RAM, offline mode, AI prediksi
-```
+### 10.1 Definition of Done (DoD)
+
+Sebuah fitur dianggap selesai (Done) apabila memenuhi semua kriteria berikut:
+
+- [ ] Kode frontend dan backend sudah diimplementasikan sesuai spesifikasi di dokumen ini.
+- [ ] Validasi input berfungsi di sisi client (React) dan sisi server.
+- [ ] Hak akses (role guard) berfungsi — endpoint tidak dapat diakses oleh role yang salah.
+- [ ] Tampilan responsif dan dapat digunakan di smartphone (layar 360px ke atas).
+- [ ] Semua skenario error menampilkan pesan yang informatif kepada pengguna.
+- [ ] Waktu respons tidak melebihi 3 detik pada koneksi normal.
+- [ ] Data tidak dapat diubah setelah status pengiriman berubah menjadi 'Selesai'.
+- [ ] Foto nota tersimpan dengan benar dan dapat ditampilkan di dashboard pemilik.
+
+### 10.2 Kriteria Penerimaan Sistem (UAT)
+
+| Penguji | Skenario Uji | Kriteria Lulus |
+|---|---|---|
+| Pemilik Kebun | Login, buka dashboard, cek rekapitulasi harian, lihat foto nota, filter riwayat. | Semua data tampil akurat, foto bisa dibuka, filter berfungsi |
+| Pekerja Kebun | Login, input keberangkatan (pilih mobil & lahan), input berat netto setelah timbang. | Form tersubmit, status berubah otomatis, timestamp tercatat |
+| Petugas RAM | Login, cari mobil by plat, upload foto nota dari kamera. | Foto tersimpan, status berubah ke Selesai, muncul di dashboard pemilik |
+| Tim Dev | Coba akses halaman yang tidak sesuai role. Input data tidak valid. | Sistem menolak dengan pesan error yang tepat dan jelas |
+
+---
+
+## 11. Riwayat Dokumen
+
+| Versi | Tanggal | Penulis | Perubahan |
+|---|---|---|---|
+| v1.0 | 2024 | Tim Pengembang SISTRA-SAWIT | Dokumen PRD awal dibuat berdasarkan SKPL v1.0. |
+
+---
+
+*CONFIDENTIAL — Dokumen Internal Tim Pengembang SISTRA-SAWIT*

@@ -20,8 +20,7 @@ class StoreNotaRequest extends FormRequest
                 'mimes:jpg,jpeg,png',
                 'max:4096',
             ],
-
-            'berat_netto_kg' => [
+            'berat_ram_kg' => [
                 'required',
                 'numeric',
                 'min:1',

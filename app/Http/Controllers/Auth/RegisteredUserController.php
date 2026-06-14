@@ -80,6 +80,11 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return to_route('dashboard');
+        return match ($user->role) {
+            'pemilik' => redirect()->route('dashboard.pemilik'),
+            'pekerja' => redirect()->route('dashboard.pekerja'),
+            'petugas_ram' => redirect()->route('dashboard.ram'),
+            default => redirect('/'),
+        };
     }
 }
