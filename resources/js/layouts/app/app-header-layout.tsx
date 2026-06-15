@@ -2,6 +2,7 @@ import { AppContent } from '@/components/app-content';
 import { AppHeader } from '@/components/app-header';
 import { AppShell } from '@/components/app-shell';
 import { type BreadcrumbItem } from '@/types';
+import { Toaster } from 'sonner';
 
 interface AppHeaderLayoutProps {
     children: React.ReactNode;
@@ -12,6 +13,7 @@ export default function AppHeaderLayout({ children, breadcrumbs }: AppHeaderLayo
     return (
         <AppShell>
             {children}
+            <Toaster richColors position="top-right" />
         </AppShell>
     );
 }

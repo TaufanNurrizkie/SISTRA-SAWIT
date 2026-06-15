@@ -34,16 +34,16 @@ interface PekerjaDashboardProps {
 }
 
 function statusBadgeStyle(status: string) {
-    if (status === 'perjalanan')    return 'bg-[#DBEAFE] text-[#1D4ED8] dark:bg-blue-500/20 dark:text-blue-400';
+    if (status === 'perjalanan') return 'bg-[#DBEAFE] text-[#1D4ED8] dark:bg-blue-500/20 dark:text-blue-400';
     if (status === 'menunggu_nota') return 'bg-[#FEF3C7] text-[#B45309] dark:bg-amber-500/20 dark:text-amber-400';
-    if (status === 'selesai')       return 'bg-[#DCFCE7] text-[#15803D] dark:bg-green-500/20 dark:text-green-400';
+    if (status === 'selesai') return 'bg-[#DCFCE7] text-[#15803D] dark:bg-green-500/20 dark:text-green-400';
     return '';
 }
 
 function statusLabel(status: string) {
-    if (status === 'perjalanan')    return 'Perjalanan';
+    if (status === 'perjalanan') return 'Perjalanan';
     if (status === 'menunggu_nota') return 'Nota';
-    if (status === 'selesai')       return 'Selesai';
+    if (status === 'selesai') return 'Selesai';
     return status;
 }
 
@@ -52,6 +52,10 @@ export default function PekerjaDashboard() {
         usePage<{ props: PekerjaDashboardProps } & SharedData>().props as unknown as PekerjaDashboardProps & SharedData;
 
     const namaUser = auth?.user?.name?.split(' ')[0] ?? 'Supir';
+
+    // Tambahkan di PekerjaDashboard, setelah baris namaUser
+    console.log('Auth user:', auth?.user);
+    console.log('Riwayat:', riwayat);
 
     return (
         <AppLayout breadcrumbs={[{ title: 'Dashboard Pekerja', href: '/dashboard-pekerja' }]}>

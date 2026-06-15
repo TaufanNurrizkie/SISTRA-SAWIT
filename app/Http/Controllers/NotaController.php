@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Nota;
 use App\Models\Pengiriman;
+use App\Models\User;
+use App\Notifications\NotaUploaded;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -36,7 +39,7 @@ class NotaController extends Controller
     {
         $fotoPath = $request->file('foto_nota')->store('nota', 'public');
 
-        Nota::create([
+        $nota = Nota::create([
             'pengiriman_id' => $pengiriman->id,
             'petugas_id'    => auth()->id(),
             'foto_nota'     => $fotoPath,
@@ -44,8 +47,13 @@ class NotaController extends Controller
             'waktu_upload'  => now(),
         ]);
 
-        // Hanya ubah status ke selesai, TIDAK overwrite berat pekerja
         $pengiriman->update(['status' => 'selesai']);
+
+        // Notif ke pemilik + pekerja yang bersangkutan: nota sudah diupload
+        $nota->load('pengiriman.mobil');
+        $pemilik = User::where('role', 'pemilik')->get();
+        Notification::send($pemilik, new NotaUploaded($nota));
+        $pengiriman->pekerja->notify(new NotaUploaded($nota));
 
         return redirect()
             ->route('nota.index')

@@ -5,6 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PlusIcon, EditIcon, TrashIcon, CameraIcon, ScaleIcon, EyeIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
+import { useEffect } from 'react';
+
 
 interface Pengiriman {
     id: number;
@@ -23,17 +37,22 @@ export default function PengirimanIndex({ pengiriman }: { pengiriman: Pengiriman
     const isPemilik = auth.user.role === 'pemilik';
 
     const handleDelete = (id: number) => {
-        if (confirm('Apakah Anda yakin ingin membatalkan pengiriman ini?')) {
-            router.delete(`/pengiriman/${id}`);
-        }
+        router.delete(`/pengiriman/${id}`);
     };
+    const { flash } = usePage<any>().props;
+
+    useEffect(() => {
+        if (flash?.success) toast.success(flash.success);
+        if (flash?.error) toast.error(flash.error);
+    }, [flash]);
+
 
     const getStatusBadge = (status: string) => {
         switch (status?.toLowerCase()) {
-            case 'perjalanan':    return <Badge className="rounded-full border-none shadow-none bg-[#DBEAFE] text-[#1D4ED8] hover:bg-[#DBEAFE] dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500/20">Perjalanan</Badge>;
+            case 'perjalanan': return <Badge className="rounded-full border-none shadow-none bg-[#DBEAFE] text-[#1D4ED8] hover:bg-[#DBEAFE] dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500/20">Perjalanan</Badge>;
             case 'menunggu_nota': return <Badge className="rounded-full border-none shadow-none whitespace-nowrap bg-[#FEF3C7] text-[#B45309] hover:bg-[#FEF3C7] dark:bg-amber-500/20 dark:text-amber-400 dark:hover:bg-amber-500/20">Nota</Badge>;
-            case 'selesai':       return <Badge className="rounded-full border-none shadow-none bg-[#DCFCE7] text-[#15803D] hover:bg-[#DCFCE7] dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/20">Selesai</Badge>;
-            default:              return <Badge className="rounded-full border-none shadow-none">{status || '-'}</Badge>;
+            case 'selesai': return <Badge className="rounded-full border-none shadow-none bg-[#DCFCE7] text-[#15803D] hover:bg-[#DCFCE7] dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/20">Selesai</Badge>;
+            default: return <Badge className="rounded-full border-none shadow-none">{status || '-'}</Badge>;
         }
     };
 
@@ -130,7 +149,7 @@ export default function PengirimanIndex({ pengiriman }: { pengiriman: Pengiriman
                                                             </Link>
                                                         </Button>
                                                     )}
-                                                    
+
                                                     {!isPemilik && !isPekerja && !item.nota && (
                                                         <Button asChild variant="outline" size="sm" className="h-8 border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700" title="Upload Nota">
                                                             <Link href={`/nota/${item.id}/upload`}>
@@ -141,16 +160,36 @@ export default function PengirimanIndex({ pengiriman }: { pengiriman: Pengiriman
                                                     )}
 
                                                     {(isPemilik || isPekerja) && (
-                                                        <Button 
-                                                            variant="ghost" 
-                                                            size="icon" 
-                                                            className="h-8 w-8 text-red-600 hover:text-red-700"
-                                                            onClick={() => handleDelete(item.id)}
-                                                            disabled={item.status === 'selesai'}
-                                                            title="Batalkan Pengiriman"
-                                                        >
-                                                            <TrashIcon className="h-4 w-4" />
-                                                        </Button>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="h-8 w-8 text-red-600 hover:text-red-700"
+                                                                    disabled={item.status === 'selesai'}
+                                                                    title="Batalkan Pengiriman"
+                                                                >
+                                                                    <TrashIcon className="h-4 w-4" />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Batalkan Pengiriman?</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        Pengiriman truk <span className="font-semibold">{item.mobil?.plat_nomor}</span> dari blok <span className="font-semibold">{item.lahan?.nama_blok}</span> akan dihapus permanen dan tidak bisa dikembalikan.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        className="bg-red-600 hover:bg-red-700 text-white"
+                                                                        onClick={() => handleDelete(item.id)}
+                                                                    >
+                                                                        Ya, Batalkan
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
                                                     )}
                                                 </div>
                                             </TableCell>

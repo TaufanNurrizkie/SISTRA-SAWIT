@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\Auth\OtpController;
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LahanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\NotaController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PengirimanController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -84,6 +87,27 @@ Route::middleware([
     Route::post('/nota/{pengiriman}', [NotaController::class, 'store'])
         ->name('nota.store');
 });
+
+// Route PDF
+Route::get('/laporan/pdf', [LaporanController::class, 'exportPdf']);
+
+// Notification
+Route::middleware('auth')->group(function () {
+    // ... route lain yang sudah ada
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+});
+
+// Google WA
+Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
+Route::post('/auth/otp/send',   [OtpController::class, 'sendOtp'])
+    ->middleware('throttle:5,1')
+    ->name('otp.send');
+
+Route::post('/auth/otp/verify', [OtpController::class, 'verifyOtp'])
+    ->name('otp.verify');
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

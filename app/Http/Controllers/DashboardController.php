@@ -93,6 +93,7 @@ class DashboardController extends Controller
     public function pekerja()
     {
         $user = Auth::user();
+
         $today = Carbon::today();
 
         $pengirimanAktif = Pengiriman::with(['mobil', 'lahan'])
@@ -107,6 +108,8 @@ class DashboardController extends Controller
         $totalBeratHariIni = Pengiriman::where('pekerja_id', $user->id)
             ->whereDate('waktu_berangkat', $today)
             ->whereNotNull('berat_netto_kg')->sum('berat_netto_kg');
+
+
 
         $riwayat = Pengiriman::with(['mobil', 'lahan'])
             ->where('pekerja_id', $user->id)
@@ -158,6 +161,7 @@ class DashboardController extends Controller
     public function ram()
     {
         $user = Auth::user();
+
         $today = Carbon::today();
 
         $menungguNota = Pengiriman::with(['mobil'])

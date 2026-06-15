@@ -5,6 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PlusIcon, EditIcon, TrashIcon, TruckIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
+import { useEffect } from 'react';
+import { usePage } from '@inertiajs/react';
 
 interface Mobil {
     id: number;
@@ -16,10 +30,15 @@ interface Mobil {
 
 export default function MobilIndex({ mobils }: { mobils: Mobil[] }) {
     const handleDelete = (id: number) => {
-        if (confirm('Apakah Anda yakin ingin menghapus data mobil ini?')) {
-            router.delete(`/mobil/${id}`);
-        }
+        router.delete(`/mobil/${id}`);
     };
+
+    const { flash } = usePage<any>().props;
+
+    useEffect(() => {
+        if (flash?.success) toast.success(flash.success);
+        if (flash?.error) toast.error(flash.error);
+    }, [flash]);
 
     return (
         <AppHeaderLayout>
@@ -87,14 +106,34 @@ export default function MobilIndex({ mobils }: { mobils: Mobil[] }) {
                                                             <EditIcon className="h-4 w-4" />
                                                         </Link>
                                                     </Button>
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        className="h-8 w-8 text-red-600 hover:text-red-700"
-                                                        onClick={() => handleDelete(mobil.id)}
-                                                    >
-                                                        <TrashIcon className="h-4 w-4" />
-                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8 text-red-600 hover:text-red-700"
+                                                            >
+                                                                <TrashIcon className="h-4 w-4" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Hapus Mobil?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Data mobil <span className="font-semibold">{mobil.nama_mobil}</span> akan dihapus permanen dan tidak bisa dikembalikan.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Batal</AlertDialogCancel>
+                                                                <AlertDialogAction
+                                                                    className="bg-red-600 hover:bg-red-700 text-white"
+                                                                    onClick={() => handleDelete(mobil.id)}
+                                                                >
+                                                                    Ya, Hapus
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
                                                 </div>
                                             </TableCell>
                                         </TableRow>

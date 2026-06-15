@@ -350,8 +350,8 @@ export default function Register() {
                                     data.password.length > 0 && showPassword
                                         ? `skewX(0deg)`
                                         : isTyping || (data.password.length > 0 && !showPassword)
-                                          ? `skewX(${(purplePos.bodySkew || 0) - 12}deg) translateX(40px)`
-                                          : `skewX(${purplePos.bodySkew || 0}deg)`,
+                                            ? `skewX(${(purplePos.bodySkew || 0) - 12}deg) translateX(40px)`
+                                            : `skewX(${purplePos.bodySkew || 0}deg)`,
                                 transformOrigin: 'bottom center',
                             }}
                         >
@@ -371,14 +371,14 @@ export default function Register() {
                                         data.password.length > 0 && showPassword
                                             ? `${20}px`
                                             : isLookingAtEachOther
-                                              ? `${55}px`
-                                              : `${45 + purplePos.faceX}px`,
+                                                ? `${55}px`
+                                                : `${45 + purplePos.faceX}px`,
                                     top:
                                         data.password.length > 0 && showPassword
                                             ? `${35}px`
                                             : isLookingAtEachOther
-                                              ? `${65}px`
-                                              : `${40 + purplePos.faceY}px`,
+                                                ? `${65}px`
+                                                : `${40 + purplePos.faceY}px`,
                                 }}
                             >
                                 <EyeBall
@@ -427,10 +427,10 @@ export default function Register() {
                                     data.password.length > 0 && showPassword
                                         ? `skewX(0deg)`
                                         : isLookingAtEachOther
-                                          ? `skewX(${(blackPos.bodySkew || 0) * 1.5 + 10}deg) translateX(20px)`
-                                          : isTyping || (data.password.length > 0 && !showPassword)
-                                            ? `skewX(${(blackPos.bodySkew || 0) * 1.5}deg)`
-                                            : `skewX(${blackPos.bodySkew || 0}deg)`,
+                                            ? `skewX(${(blackPos.bodySkew || 0) * 1.5 + 10}deg) translateX(20px)`
+                                            : isTyping || (data.password.length > 0 && !showPassword)
+                                                ? `skewX(${(blackPos.bodySkew || 0) * 1.5}deg)`
+                                                : `skewX(${blackPos.bodySkew || 0}deg)`,
                                 transformOrigin: 'bottom center',
                             }}
                         >
@@ -450,14 +450,14 @@ export default function Register() {
                                         data.password.length > 0 && showPassword
                                             ? `${10}px`
                                             : isLookingAtEachOther
-                                              ? `${32}px`
-                                              : `${26 + blackPos.faceX}px`,
+                                                ? `${32}px`
+                                                : `${26 + blackPos.faceX}px`,
                                     top:
                                         data.password.length > 0 && showPassword
                                             ? `${28}px`
                                             : isLookingAtEachOther
-                                              ? `${12}px`
-                                              : `${32 + blackPos.faceY}px`,
+                                                ? `${12}px`
+                                                : `${32 + blackPos.faceY}px`,
                                 }}
                             >
                                 <EyeBall
@@ -733,10 +733,43 @@ export default function Register() {
                             <InputError message={errors.password_confirmation} />
                         </div>
 
-                        <Button 
-                            type="submit" 
+                        <div className="text-center">OR</div>
+
+                        <div className="mt-4">
+                            <a
+                                href="/auth/google"
+                                className="flex items-center justify-center gap-2 w-full border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-50 transition"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 48 48"
+                                    className="w-5 h-5"
+                                >
+                                    <path
+                                        fill="#FFC107"
+                                        d="M43.611 20.083H42V20H24v8h11.303C33.655 32.657 29.204 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.955 3.045l5.657-5.657C34.046 6.053 29.27 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
+                                    />
+                                    <path
+                                        fill="#FF3D00"
+                                        d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.955 3.045l5.657-5.657C34.046 6.053 29.27 4 24 4c-7.682 0-14.318 4.337-17.694 10.691z"
+                                    />
+                                    <path
+                                        fill="#4CAF50"
+                                        d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.146 35.091 26.676 36 24 36c-5.183 0-9.623-3.326-11.283-7.946l-6.522 5.025C9.529 39.556 16.227 44 24 44z"
+                                    />
+                                    <path
+                                        fill="#1976D2"
+                                        d="M43.611 20.083H42V20H24v8h11.303c-1.125 3.188-3.561 5.705-6.894 7.57l6.19 5.238C38.269 37.404 44 31.252 44 24c0-1.341-.138-2.65-.389-3.917z"
+                                    />
+                                </svg>
+                                Masuk dengan Google
+                            </a>
+                        </div>
+
+                        <Button
+                            type="submit"
                             className="mt-6 flex h-11 w-full animate-none cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-[#65A30D] text-base font-bold text-white shadow-sm transition-all hover:bg-[#84CC16]"
-                            tabIndex={7} 
+                            tabIndex={7}
                             disabled={processing}
                         >
                             {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}

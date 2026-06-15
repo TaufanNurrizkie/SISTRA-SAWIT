@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { ScaleIcon, TruckIcon, AlertTriangleIcon, CheckCircleIcon, EyeIcon, FilterIcon } from 'lucide-react';
+import { ScaleIcon, TruckIcon, AlertTriangleIcon, CheckCircleIcon, EyeIcon, FilterIcon, PrinterIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
@@ -60,6 +60,9 @@ export default function LaporanIndex() {
     };
 
     const fmt = (n: number | null) => n != null ? n.toLocaleString('id-ID') : '-';
+    const handleExportPdf = () => {
+        window.print();
+    };
 
     return (
         <AppHeaderLayout>
@@ -147,9 +150,19 @@ export default function LaporanIndex() {
 
                 {/* Tabel */}
                 <Card className="rounded-[20px] shadow-sm">
-                    <CardHeader>
-                        <CardTitle>Detail Pengiriman</CardTitle>
-                        <CardDescription>{pengiriman.length} data pengiriman selesai</CardDescription>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle>Detail Pengiriman</CardTitle>
+                            <CardDescription>{pengiriman.length} data pengiriman selesai</CardDescription>
+                        </div>
+                        <Button
+                            onClick={handleExportPdf}
+                            variant="outline"
+                            className="print-hide h-9 gap-2 border-[#65A30D] text-[#65A30D] hover:bg-[#f0fdf4] hover:text-[#4D7C0F]"
+                        >
+                            <PrinterIcon className="size-4" />
+                            Export PDF
+                        </Button>
                     </CardHeader>
                     <CardContent className="p-0">
                         <div className="overflow-auto">

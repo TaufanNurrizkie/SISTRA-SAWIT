@@ -54,7 +54,7 @@ class LaporanController extends Controller
             'summary' => [
                 'totalRitase'  => $totalRitase,
                 'totalBeratKg' => $totalBeratKg,
-                'totalBeratRam'=> $totalBeratRam,
+                'totalBeratRam' => $totalBeratRam,
                 'selisihTotal' => $totalBeratRam - $totalBeratKg,
                 'kasusSelisih' => $kasusSelisih,
             ],

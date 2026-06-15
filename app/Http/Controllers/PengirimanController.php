@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Lahan;
 use App\Models\Mobil;
 use App\Models\Pengiriman;
+use App\Models\User;
+use App\Notifications\PengirimanStatusChanged;
+use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
 
 use App\Http\Requests\Pengiriman\StorePengirimanRequest;
@@ -14,15 +17,16 @@ class PengirimanController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
+
+        $query = Pengiriman::with(['mobil', 'lahan', 'pekerja', 'nota'])->latest();
+
+        if ($user->role !== 'pemilik') {
+            $query->where('pekerja_id', $user->id);
+        }
+
         return Inertia::render('pengiriman/Index', [
-            'pengiriman' => Pengiriman::with([
-                'mobil',
-                'lahan',
-                'pekerja',
-                'nota'
-            ])
-                ->latest()
-                ->get()
+            'pengiriman' => $query->get()
         ]);
     }
 
@@ -45,10 +49,15 @@ class PengirimanController extends Controller
 
     public function store(StorePengirimanRequest $request)
     {
-        Pengiriman::create([
+        $pengiriman = Pengiriman::create([
             ...$request->validated(),
             'pekerja_id' => auth()->id(),
         ]);
+
+        // Notif ke semua pemilik: ada pengiriman baru masuk
+        $pengiriman->load('mobil');
+        $pemilik = User::where('role', 'pemilik')->get();
+        Notification::send($pemilik, new PengirimanStatusChanged($pengiriman));
 
         return redirect()
             ->route('pengiriman.index')
@@ -64,14 +73,9 @@ class PengirimanController extends Controller
         ]);
     }
 
-    public function update(
-        UpdatePengirimanRequest $request,
-        Pengiriman $pengiriman
-    ) {
-
-        $pengiriman->update(
-            $request->validated()
-        );
+    public function update(UpdatePengirimanRequest $request, Pengiriman $pengiriman)
+    {
+        $pengiriman->update($request->validated());
 
         return redirect()
             ->route('pengiriman.index')
@@ -87,10 +91,8 @@ class PengirimanController extends Controller
             ->with('success', 'Pengiriman berhasil dihapus');
     }
 
-    // Halaman input berat netto (khusus pekerja)
     public function timbang(Pengiriman $pengiriman)
     {
-        // Hanya bisa input berat kalau status masih perjalanan
         if ($pengiriman->status !== 'perjalanan') {
             return redirect()->route('pengiriman.index')
                 ->with('error', 'Berat sudah diinput atau pengiriman sudah selesai.');
@@ -101,7 +103,6 @@ class PengirimanController extends Controller
         ]);
     }
 
-    // Simpan berat netto dan ubah status ke menunggu_nota
     public function simpanBerat(Pengiriman $pengiriman)
     {
         request()->validate([
@@ -112,6 +113,11 @@ class PengirimanController extends Controller
             'berat_netto_kg' => request('berat_netto_kg'),
             'status' => 'menunggu_nota',
         ]);
+
+        // Notif ke semua pemilik + petugas RAM: ada pengiriman menunggu nota
+        $pengiriman->load('mobil');
+        $penerima = User::whereIn('role', ['pemilik', 'petugas_ram'])->get();
+        Notification::send($penerima, new PengirimanStatusChanged($pengiriman));
 
         return redirect()->route('pengiriman.index')
             ->with('success', 'Berat berhasil diinput. Status berubah ke Menunggu Nota.');

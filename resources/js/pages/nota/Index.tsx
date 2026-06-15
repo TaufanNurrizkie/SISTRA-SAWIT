@@ -5,8 +5,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CameraIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
+import { useEffect } from 'react';
+import { usePage } from '@inertiajs/react';
 
 export default function NotaIndex({ pengiriman }: { pengiriman: any[] }) {
+    const { flash } = usePage<any>().props;
+
+    useEffect(() => {
+        if (flash?.success) toast.success(flash.success);
+        if (flash?.error) toast.error(flash.error);
+    }, [flash]);
     return (
         <AppHeaderLayout>
             <Head title="Antrean Upload Nota" />

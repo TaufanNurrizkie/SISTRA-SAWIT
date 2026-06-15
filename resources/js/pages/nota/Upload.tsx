@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { ArrowLeftIcon, LoaderCircle, UploadCloudIcon, TruckIcon, MapPinIcon, UserIcon, ScaleIcon, AlertTriangleIcon } from 'lucide-react';
+import { ArrowLeftIcon, LoaderCircle, UploadCloudIcon, TruckIcon, MapPinIcon, UserIcon, ScaleIcon, AlertTriangleIcon, XIcon } from 'lucide-react';
 import InputError from '@/components/input-error';
 
 interface Pengiriman {
@@ -29,7 +29,6 @@ export default function NotaUpload({ pengiriman }: { pengiriman: Pengiriman }) {
     const beratPekerja = pengiriman.berat_netto_kg ?? 0;
     const beratRam = Number(data.berat_ram_kg) || 0;
     const selisih = beratRam - beratPekerja;
-    const adaSelisih = data.berat_ram_kg !== '' && selisih !== 0;
 
     return (
         <AppHeaderLayout>
@@ -104,11 +103,10 @@ export default function NotaUpload({ pengiriman }: { pengiriman: Pengiriman }) {
 
                                     {/* Perbandingan selisih */}
                                     {data.berat_ram_kg !== '' && beratPekerja > 0 && (
-                                        <div className={`rounded-lg border p-3 text-sm ${
-                                            selisih === 0
-                                                ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/30 dark:bg-green-950/20 dark:text-green-400'
-                                                : 'border-red-200 bg-red-50 text-red-700 dark:border-red-900/30 dark:bg-red-950/20 dark:text-red-400'
-                                        }`}>
+                                        <div className={`rounded-lg border p-3 text-sm ${selisih === 0
+                                            ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/30 dark:bg-green-950/20 dark:text-green-400'
+                                            : 'border-red-200 bg-red-50 text-red-700 dark:border-red-900/30 dark:bg-red-950/20 dark:text-red-400'
+                                            }`}>
                                             {selisih === 0 ? (
                                                 <span>✓ Berat sesuai dengan laporan supir.</span>
                                             ) : (
@@ -125,28 +123,50 @@ export default function NotaUpload({ pengiriman }: { pengiriman: Pengiriman }) {
                                 {/* Upload foto */}
                                 <div className="space-y-2">
                                     <Label htmlFor="foto_nota">Foto Nota Asli</Label>
-                                    <div className="flex w-full items-center justify-center">
-                                        <label htmlFor="foto_nota" className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30 hover:bg-muted/50">
-                                            <div className="flex flex-col items-center justify-center pb-6 pt-5">
-                                                <UploadCloudIcon className="mb-2 h-8 w-8 text-muted-foreground" />
-                                                <p className="mb-1 text-sm text-muted-foreground">
-                                                    <span className="font-semibold">Klik untuk mengunggah</span> atau seret file
-                                                </p>
-                                                <p className="text-xs text-muted-foreground">PNG, JPG (Maks 4MB)</p>
-                                            </div>
-                                            <input
-                                                id="foto_nota"
-                                                type="file"
-                                                className="hidden"
-                                                accept="image/*"
-                                                onChange={(e) => setData('foto_nota', e.target.files ? e.target.files[0] : null)}
-                                                required
-                                            />
-                                        </label>
-                                    </div>
-                                    {data.foto_nota && (
-                                        <p className="text-sm font-medium text-[#65A30D]">✓ {data.foto_nota.name}</p>
+
+                                    {/* Area upload — sembunyikan kalau sudah ada foto */}
+                                    {!data.foto_nota && (
+                                        <div className="flex w-full items-center justify-center">
+                                            <label htmlFor="foto_nota" className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30 hover:bg-muted/50">
+                                                <div className="flex flex-col items-center justify-center pb-6 pt-5">
+                                                    <UploadCloudIcon className="mb-2 h-8 w-8 text-muted-foreground" />
+                                                    <p className="mb-1 text-sm text-muted-foreground">
+                                                        <span className="font-semibold">Klik untuk mengunggah</span> atau seret file
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">PNG, JPG (Maks 4MB)</p>
+                                                </div>
+                                                <input
+                                                    id="foto_nota"
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={(e) => setData('foto_nota', e.target.files ? e.target.files[0] : null)}
+                                                />
+                                            </label>
+                                        </div>
                                     )}
+
+                                    {/* Preview foto */}
+                                    {data.foto_nota && (
+                                        <div className="space-y-2">
+                                            <div className="relative overflow-hidden rounded-lg border border-border">
+                                                <img
+                                                    src={URL.createObjectURL(data.foto_nota)}
+                                                    alt="Preview nota"
+                                                    className="w-full max-h-64 object-contain bg-muted/30"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setData('foto_nota', null)}
+                                                    className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+                                                >
+                                                    <XIcon className="size-3" />
+                                                </button>
+                                            </div>
+                                            <p className="text-sm font-medium text-[#65A30D]">✓ {data.foto_nota.name}</p>
+                                        </div>
+                                    )}
+
                                     <InputError message={errors.foto_nota} />
                                 </div>
                             </CardContent>
