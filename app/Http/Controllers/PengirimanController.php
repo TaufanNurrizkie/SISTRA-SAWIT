@@ -21,7 +21,9 @@ class PengirimanController extends Controller
 
         $query = Pengiriman::with(['mobil', 'lahan', 'pekerja', 'nota'])->latest();
 
-        if ($user->role !== 'pemilik') {
+        // Pekerja hanya bisa melihat pengiriman mereka sendiri
+        // Pemilik dan Petugas RAM bisa melihat semua pengiriman
+        if ($user->role === 'pekerja') {
             $query->where('pekerja_id', $user->id);
         }
 
